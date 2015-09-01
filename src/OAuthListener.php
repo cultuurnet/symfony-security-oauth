@@ -27,13 +27,11 @@ class OAuthListener implements ListenerInterface
     public function __construct(
         TokenStorageInterface $tokenStorage,
         AuthenticationManagerInterface $authenticationManager,
-        $baseUrl,
-        ConsumerCredentials $consumerCredentials
+        UitidCredentialsFetcher $fetcher
     ) {
         $this->tokenStorage = $tokenStorage;
         $this->authenticationManager = $authenticationManager;
-        $this->baseUrl = $baseUrl;
-        $this->consumerCredentials = $consumerCredentials;
+        $this->fetcher = $fetcher;
     }
 
     /**
@@ -45,9 +43,7 @@ class OAuthListener implements ListenerInterface
     {
         $request = $event->getRequest();
 
-        $fetcher = new UitidCredentialsFetcher($this->baseUrl, $this->consumerCredentials);
-
-        $token = $fetcher->getAccessToken($tokenKey);
+        $token = $this->fetcher->getAccessToken($tokenKey);
 
         $oauth_token = new OAuthToken();
         $oauth_token->consumer = $token->getConsumer();
