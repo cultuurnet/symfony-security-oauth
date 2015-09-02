@@ -16,12 +16,12 @@
     },
     "autoload": {
         "psr-4": {
-            "CultuurNet\\SymfonySecurityOauth\\": "src/"
+            "CultuurNet\\SymfonySecurityOAuth\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "CultuurNet\\SymfonySecurityOauth\\": "test/"
+            "CultuurNet\\SymfonySecurityOAuth\\": "tests/"
         }
     },
     "minimum-stability": "dev",
