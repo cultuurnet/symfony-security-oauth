@@ -1,5 +1,5 @@
 <?php
-namespace CultuurNet\SymfonySecurityOAuth;
+namespace CultuurNet\SymfonySecurityOAuth\EventListener;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
