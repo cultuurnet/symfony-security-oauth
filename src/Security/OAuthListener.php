@@ -6,7 +6,7 @@
  * Time: 16:48
  */
 
-namespace CultuurNet\SymfonySecurityOAuth;
+namespace CultuurNet\SymfonySecurityOAuth\Security;
 
 use CultuurNet\Auth\ConsumerCredentials;
 use CultuurNet\UitidCredentials\UitidCredentialsFetcher;
@@ -31,7 +31,6 @@ class OAuthListener implements ListenerInterface
     ) {
         $this->tokenStorage = $tokenStorage;
         $this->authenticationManager = $authenticationManager;
-        $this->fetcher = $fetcher;
     }
 
     /**

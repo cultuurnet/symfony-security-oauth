@@ -6,7 +6,7 @@
  * Time: 11:00
  */
 
-namespace CultuurNet\SymfonySecurityOAuth;
+namespace CultuurNet\SymfonySecurityOAuth\Security;
 
 use CultuurNet\UitidCredentials\Entities\Consumer;
 use CultuurNet\UitidCredentials\Entities\User;
