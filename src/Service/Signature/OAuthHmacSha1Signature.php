@@ -34,12 +34,14 @@ class OAuthHmacSha1Signature extends OAuthAbstractSignature
             $key = pack('H*', $hashfunc($key));
         }
         $key  = str_pad($key, $blocksize, chr(0x00));
-        $ipad = str_repeat(chr(0x36),$blocksize);
-        $opad = str_repeat(chr(0x5c),$blocksize);
+        $ipad = str_repeat(chr(0x36), $blocksize);
+        $opad = str_repeat(chr(0x5c), $blocksize);
         $hmac = pack(
-            'H*', $hashfunc(
+            'H*',
+            $hashfunc(
                 ($key^$opad) . pack(
-                    'H*', $hashfunc(
+                    'H*',
+                    $hashfunc(
                         ($key^$ipad) . $baseString
                     )
                 )
