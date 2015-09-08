@@ -86,7 +86,7 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
         }
 
 
-        if (true !== $this->approveSignature($consumer, $token, $requestParameters, $requestMethod, $requestUrl)) {
+        if (true !== $this->approveSignature($consumer, $requestParameters, $requestMethod, $requestUrl, $token)) {
             throw new HttpException(401, self::ERROR_SIGNATURE_INVALID);
         }
         if ($token->hasExpired()) {
@@ -100,15 +100,20 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
      * Calculate the signature and compare it to the given signature.
      *
      * @param  Consumer          $consumer          A consumer.
-     * @param  TokenInterface    $token             A token.
      * @param  array             $requestParameters An array of request parameters.
      * @param  string            $requestMethod     The request method.
      * @param  string            $requestUrl        The request UI
+     * @param  TokenInterface    $token             A token.
      * @return boolean           <code>true</code> if the provided signature is correct,
      *                   <code>false</code> otherwise.
      */
-    protected function approveSignature(Consumer $consumer, TokenInterface $token = null, $requestParameters, $requestMethod, $requestUrl)
-    {
+    protected function approveSignature(
+        Consumer $consumer,
+        $requestParameters,
+        $requestMethod,
+        $requestUrl,
+        TokenInterface $token = null
+    ) {
         $signatureService = $this->getSignatureService($requestParameters['oauth_signature_method']);
         $baseString = $this->getSignatureBaseString($signatureService, $requestMethod, $requestUrl, $this->normalizeRequestParameters($requestParameters));
         $secretToken = (null !== $token) ? $token->getSecret() : '';
