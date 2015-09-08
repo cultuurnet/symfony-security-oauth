@@ -13,6 +13,7 @@ use CultuurNet\SymfonySecurityOAuth\Model\ConsumerInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\RequestTokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\TokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Util\Random;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class TokenProvider implements TokenProviderInterface
 {
