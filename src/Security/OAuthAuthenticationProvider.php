@@ -8,6 +8,8 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Security;
 
+use CultuurNet\SymfonySecurityOAuth\Model\AccessTokenInterface;
+use CultuurNet\SymfonySecurityOAuth\Service\OAuthServerServiceInterface;
 use CultuurNet\UitidCredentials\Entities\Consumer;
 use CultuurNet\UitidCredentials\Entities\Token;
 use CultuurNet\UitidCredentials\UitidCredentialsFetcher;
@@ -26,14 +28,18 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
 
     /**
      * @param UserProviderInterface       $userProvider  The user provider.
-     * @param UitidCredentialsFetcher     $fetcher.
+     * @param OAuthServerServiceInterface $serverService
+     * @param UitidCredentialsFetcher     $fetcher
      */
     public function __construct(
         UserProviderInterface $userProvider,
+        OAuthServerServiceInterface $serverService,
         UitidCredentialsFetcher $fetcher
     ) {
         $this->userProvider  = $userProvider;
-        $this->fetcher = $fetcher;
+        $this->serverService = $serverService;
+        $this->tokenProvider = $serverService->getTokenProvider();
+        $this->fetcher       = $fetcher;
     }
 
     /**
@@ -46,17 +52,18 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
             return null;
         }
 
-        $oauth_request_parameters = $token->getRequestParameters;
-
-        /** @var Token $uitid_token */
-        $uitid_token = $this->fetcher->getAccessToken($oauth_request_parameters['oauth_token']);
-
-        // Things to do here:
-        // @TODO calculate signature & validate signature with signature in request.
-        // @TODO validate timestamp.
+//        $oauth_request_parameters = $token->getRequestParameters;
+//
+//        /** @var Token $uitid_token */
+//        $uitid_token = $this->fetcher->getAccessToken($oauth_request_parameters['oauth_token']);
 
 
-        if ($this->validateRequest($token->getRequestParameters(), $token->getRequestMethod(), $token->getRequestUrl(), $uitid_token->getConsumer())) {
+        if ($this->serverService->validateRequest(
+            $token->getRequestParameters(),
+            $token->getRequestMethod(),
+            $token->getRequestUrl(),
+            $this->fetcher
+        )) {
             $params      = $token->getRequestParameters();
             $accessToken = $this->tokenProvider->loadAccessTokenByToken($params['oauth_token']);
             $user        = $accessToken->getUser();
@@ -65,60 +72,12 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
                 return $token;
             }
         }
+
         throw new AuthenticationException('OAuth authentication failed');
     }
 
     public function supports(TokenInterface $token)
     {
         return $token instanceof OAuthToken;
-    }
-
-    public function validateRequest($requestParameters, $requestMethod, $requestUrl, $consumer)
-    {
-        $token    = $this->tokenProvider->loadAccessTokenByToken($requestParameters['oauth_token']);
-        if (false === $this->nonceProvider->checkNonceAndTimestampUnicity($requestParameters['oauth_nonce'], $requestParameters['oauth_timestamp'], $consumer)) {
-            throw new HttpException(400, self::ERROR_NONCE_USED);
-        } else {
-            $this->nonceProvider->registerNonceAndTimestamp($requestParameters['oauth_nonce'], $requestParameters['oauth_timestamp'], $consumer);
-        }
-        if (! $token instanceof AccessTokenInterface) {
-            throw new HttpException(401, self::ERROR_TOKEN_REJECTED);
-        }
-
-
-        if (true !== $this->approveSignature($consumer, $requestParameters, $requestMethod, $requestUrl, $token)) {
-            throw new HttpException(401, self::ERROR_SIGNATURE_INVALID);
-        }
-        if ($token->hasExpired()) {
-            $this->tokenProvider->deleteAccessToken($token);
-            throw new HttpException(401, self::ERROR_TOKEN_EXPIRED);
-        }
-        return true;
-    }
-
-    /**
-     * Calculate the signature and compare it to the given signature.
-     *
-     * @param  Consumer          $consumer          A consumer.
-     * @param  array             $requestParameters An array of request parameters.
-     * @param  string            $requestMethod     The request method.
-     * @param  string            $requestUrl        The request UI
-     * @param  TokenInterface    $token             A token.
-     * @return boolean           <code>true</code> if the provided signature is correct,
-     *                   <code>false</code> otherwise.
-     */
-    protected function approveSignature(
-        Consumer $consumer,
-        $requestParameters,
-        $requestMethod,
-        $requestUrl,
-        TokenInterface $token = null
-    ) {
-        $signatureService = $this->getSignatureService($requestParameters['oauth_signature_method']);
-        $baseString = $this->getSignatureBaseString($signatureService, $requestMethod, $requestUrl, $this->normalizeRequestParameters($requestParameters));
-        $secretToken = (null !== $token) ? $token->getSecret() : '';
-        $consumer = $token->
-        $calculatedSignature = $signatureService->sign($baseString, $consumer->getSecret(), $secretToken);
-        return ($calculatedSignature === $requestParameters['oauth_signature']);
     }
 }
