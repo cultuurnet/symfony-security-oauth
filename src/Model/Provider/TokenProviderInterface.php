@@ -12,6 +12,7 @@ use CultuurNet\SymfonySecurityOAuth\Model\AccessTokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\ConsumerInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\RequestTokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\TokenInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 interface TokenProviderInterface
 {
@@ -41,7 +42,7 @@ interface TokenProviderInterface
      * Create an access token.
      *
      * @param  \CultuurNet\SymfonySecurityOAuth\Model\ConsumerInterface    $consumer An OAuth consumer.
-     * @param  \CultuurNet\SymfonySecurityOAuth\Model\UserInterface        $user
+     * @param  \Symfony\Component\Security\Core\User\UserInterface         $user
      * @return \CultuurNet\SymfonySecurityOAuth\Model\AccessTokenInterface
      */
     public function createAccessToken(ConsumerInterface $consumer, UserInterface $user);
@@ -80,8 +81,8 @@ interface TokenProviderInterface
      */
     public function loadAccessTokens();
     /**
-     * @param  \CultuurNet\SymfonySecurityOAuth\Model\RequestTokenInterface $token
-     * @param  \CultuurNet\SymfonySecurityOAuth\Model\UserInterface         $user
+     * @param  \CultuurNet\SymfonySecurityOAuth\Model\RequestTokenInterface $requestToken
+     * @param  \Symfony\Component\Security\Core\User\UserInterface          $user
      * @return mixed
      */
     public function setUserForRequestToken(RequestTokenInterface $requestToken, UserInterface $user);

@@ -8,6 +8,8 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Model;
 
+use Symfony\Component\Security\Core\User\UserInterface;
+
 class Token implements TokenInterface
 {
     protected $id;
