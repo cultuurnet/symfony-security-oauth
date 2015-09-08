@@ -1,5 +1,7 @@
 # Symfony Security Oauth
 
+[![Build Status](https://travis-ci.org/cultuurnet/symfony-security-oauth.svg?branch=master)](https://travis-ci.org/cultuurnet/symfony-security-oauth)
+
 ## Info
 
 
