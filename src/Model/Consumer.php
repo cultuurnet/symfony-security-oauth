@@ -10,23 +10,31 @@ namespace CultuurNet\SymfonySecurityOAuth\Model;
 
 class Consumer implements ConsumerInterface
 {
+    /**
+     * @var string
+     */
     protected $id;
+
     /**
      * @var string
      */
     protected $name;
+
     /**
      * @var string
      */
     protected $consumerKey;
+
     /**
      * @var string
      */
     protected $consumerSecret;
+
     /**
      * @var string
      */
     protected $callback;
+
     /**
      * {@inheritDoc}
      */
@@ -34,6 +42,7 @@ class Consumer implements ConsumerInterface
     {
         return $this->id;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -41,6 +50,7 @@ class Consumer implements ConsumerInterface
     {
         return $this->name;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -49,6 +59,7 @@ class Consumer implements ConsumerInterface
         $this->name = $name;
         return $this;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -56,6 +67,7 @@ class Consumer implements ConsumerInterface
     {
         return $this->consumerKey;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -64,6 +76,7 @@ class Consumer implements ConsumerInterface
         $this->consumerKey = $consumerKey;
         return $this;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -71,6 +84,7 @@ class Consumer implements ConsumerInterface
     {
         return $this->consumerSecret;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -79,6 +93,7 @@ class Consumer implements ConsumerInterface
         $this->consumerSecret = $consumerSecret;
         return $this;
     }
+
     /**
      * {@inheritDoc}
      */
@@ -86,6 +101,7 @@ class Consumer implements ConsumerInterface
     {
         return $this->callback;
     }
+    
     /**
      * {@inheritDoc}
      */
