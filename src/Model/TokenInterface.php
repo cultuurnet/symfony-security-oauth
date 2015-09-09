@@ -71,6 +71,7 @@ interface TokenInterface
 
     /**
      * Sets the user for this token.
+     * @param UserInterface $user
      * @return self
      */
     public function setUser(UserInterface $user);
