@@ -11,6 +11,7 @@ namespace CultuurNet\SymfonySecurityOAuth\Service;
 use CultuurNet\SymfonySecurityOAuth\Model\AccessTokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\ConsumerInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\RequestTokenInterface;
+use CultuurNet\SymfonySecurityOAuth\Model\TokenInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -243,7 +244,7 @@ class OAuthServerService extends OAuthAbstractServerService
         $this->checkRequirements($requestParameters, $this->requiredParamsForValidRequest);
 
         $consumer = $this->getConsumerByKey($requestParameters['oauth_consumer_key']);
-        $token    = $this->tokenProvider->loadAccessTokenByToken($requestParameters['oauth_token']);
+        $token    = $this->tokenProvider->getAccessTokenByToken($requestParameters['oauth_token']);
 
         if (false === $this->nonceProvider->checkNonceAndTimestampUnicity(
             $requestParameters['oauth_nonce'],
@@ -259,7 +260,7 @@ class OAuthServerService extends OAuthAbstractServerService
             );
         }
 
-        if (! $token instanceof AccessTokenInterface) {
+        if (! $token instanceof TokenInterface) {
             throw new HttpException(401, self::ERROR_TOKEN_REJECTED);
         }
 
