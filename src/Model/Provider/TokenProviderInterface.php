@@ -11,8 +11,14 @@ namespace CultuurNet\SymfonySecurityOAuth\Model\Provider;
 interface TokenProviderInterface
 {
     /**
-     * @param $oauth_token
-     * @return mixed
+     * @param string $oauth_token
+     * @return \CultuurNet\SymfonySecurityOAuth\Model\TokenInterface
      */
     public function getAccessTokenByToken($oauth_token);
+
+    /**
+     * @param \CultuurNet\SymfonySecurityOAuth\Model\Token $token
+     * @return mixed
+     */
+    public function deleteAccessToken($token);
 }
