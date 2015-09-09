@@ -22,24 +22,16 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 class OAuthAuthenticationProvider implements AuthenticationProviderInterface
 {
     /**
-     * @var UitidCredentialsFetcher
-     */
-    protected $fetcher;
-
-    /**
      * @param UserProviderInterface       $userProvider  The user provider.
      * @param OAuthServerServiceInterface $serverService
-     * @param UitidCredentialsFetcher     $fetcher
      */
     public function __construct(
         UserProviderInterface $userProvider,
-        OAuthServerServiceInterface $serverService,
-        UitidCredentialsFetcher $fetcher
+        OAuthServerServiceInterface $serverService
     ) {
         $this->userProvider  = $userProvider;
         $this->serverService = $serverService;
         $this->tokenProvider = $serverService->getTokenProvider();
-        $this->fetcher       = $fetcher;
     }
 
     /**
@@ -52,20 +44,13 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
             return null;
         }
 
-//        $oauth_request_parameters = $token->getRequestParameters;
-//
-//        /** @var Token $uitid_token */
-//        $uitid_token = $this->fetcher->getAccessToken($oauth_request_parameters['oauth_token']);
-
-
         if ($this->serverService->validateRequest(
             $token->getRequestParameters(),
             $token->getRequestMethod(),
-            $token->getRequestUrl(),
-            $this->fetcher
+            $token->getRequestUrl()
         )) {
             $params      = $token->getRequestParameters();
-            $accessToken = $this->tokenProvider->loadAccessTokenByToken($params['oauth_token']);
+            $accessToken = $this->tokenProvider->getAccessTokenByToken($params['oauth_token']);
             $user        = $accessToken->getUser();
             if (null !== $user) {
                 $token->setUser($user);
