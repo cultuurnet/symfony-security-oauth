@@ -25,21 +25,6 @@ interface OAuthServerServiceInterface
     public function getConsumerProvider();
 
     /**
-     * Obtaining a Request Token
-     *
-     * @see http://tools.ietf.org/html/rfc5849#section-2.1
-     * @see http://oauth.net/core/1.0a/#auth_step1
-     *
-     * @param  array  $requestParameters An array of request parameters.
-     * @param  string $requestMethod     The request method (GET, POST, ...)
-     * @param  string $requestUrl        The request URL (http://oauth.net/core/1.0/#rfc.section.9.1.2)
-     * @return string An unauthorized Request Token as a string.
-     *
-     * Example: oauth_token=hh5s93j4hdidpola&oauth_token_secret=hdhd0244k9j7ao03&oauth_callback_confirmed=true
-     */
-    public function requestToken($requestParameters, $requestMethod, $requestUrl);
-
-    /**
      * Requesting User Authorization
      *
      * @see http://tools.ietf.org/html/rfc5849#section-2.2

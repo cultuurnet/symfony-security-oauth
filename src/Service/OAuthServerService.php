@@ -8,9 +8,7 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Service;
 
-use CultuurNet\SymfonySecurityOAuth\Model\AccessTokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\ConsumerInterface;
-use CultuurNet\SymfonySecurityOAuth\Model\RequestTokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\TokenInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -48,35 +46,6 @@ class OAuthServerService extends OAuthAbstractServerService
     }
 
     /**
-     * Proxy method that handles the error logic.
-     * Returns a consumer based on its request token.
-     *
-     * @param  RequestTokenInterface $requestToken A request token.
-     * @return ConsumerInterface     A consumer or <code>null</code>.
-     */
-    protected function getConsumerByRequestToken(RequestTokenInterface $requestToken)
-    {
-        return $this->checkConsumer($requestToken->getConsumer());
-    }
-
-    /**
-     * Proxy method that handles the error logic.
-     *
-     * @param  string                $oauth_token A request token.
-     * @return RequestTokenInterface
-     */
-    protected function loadRequestToken($oauth_token)
-    {
-        $token = $this->tokenProvider->loadRequestTokenByToken($oauth_token);
-
-        if (! $token instanceof RequestTokenInterface || $token->hasExpired()) {
-            throw new HttpException(401, self::ERROR_TOKEN_REJECTED);
-        }
-
-        return $token;
-    }
-
-    /**
      * Check that the given parameter is a valid consumer.
      *
      * @param  mixed             $consumer Should be a consumer object.
@@ -105,7 +74,7 @@ class OAuthServerService extends OAuthAbstractServerService
 
         foreach ($requiredParameters as $requiredParameter) {
             if (false === array_key_exists($requiredParameter, $requestParameters)) {
-                throw new HttpException(400, self::ERROR_PARAMETER_ABSENT);
+                throw new HttpException(400, $requiredParameter . ' ' . self::ERROR_PARAMETER_ABSENT);
             }
         }
 
@@ -156,29 +125,6 @@ class OAuthServerService extends OAuthAbstractServerService
             } else {
                 throw new HttpException(500);
             }
-        } else {
-            throw new HttpException(401, self::ERROR_SIGNATURE_INVALID);
-        }
-    }
-
-    /**
-     * {@inheritdoc}
-     * Implements interface.
-     */
-    public function requestToken($requestParameters, $requestMethod, $requestUrl)
-    {
-        $this->checkRequirements($requestParameters, $this->requiredParamsForRequestToken);
-
-        $consumer = $this->getConsumerByKey($requestParameters['oauth_consumer_key']);
-
-        if (true === $this->approveSignature($consumer, $requestParameters, $requestMethod, $requestUrl, null)) {
-            return $this->sendToken(
-                $this->tokenProvider->createRequestToken($consumer),
-                $this->getRequestTokenLifetime(),
-                array(
-                    'oauth_callback_confirmed' => true
-                )
-            );
         } else {
             throw new HttpException(401, self::ERROR_SIGNATURE_INVALID);
         }
