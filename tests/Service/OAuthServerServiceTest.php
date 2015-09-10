@@ -196,6 +196,11 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
 
     /**
      * A helper function to calculate a signature. Necessary because we need recent timestamps.
+     *
+     * @param array $requestParameters
+     * @param string $consumerSecret
+     * @param string $tokenSecret
+     * @return string
      */
     public function calculateSignature($requestParameters, $consumerSecret, $tokenSecret)
     {
