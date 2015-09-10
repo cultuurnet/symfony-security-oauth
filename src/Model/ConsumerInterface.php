@@ -48,17 +48,4 @@ interface ConsumerInterface
      * @return self
      */
     public function setConsumerSecret($consumerSecret);
-
-    /**
-     * Returns the callback.
-     * @return string The callback.
-     */
-    public function getCallback();
-
-    /**
-     * Set callback
-     * @param string $callback
-     * @return self
-     */
-    public function setCallback($callback);
 }
