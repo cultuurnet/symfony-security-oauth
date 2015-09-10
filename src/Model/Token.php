@@ -12,7 +12,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class Token implements TokenInterface
 {
-    protected $id;
     /**
      * @var string
      */
@@ -37,14 +36,6 @@ class Token implements TokenInterface
      * @var string
      */
     protected $consumer;
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * {@inheritDoc}
