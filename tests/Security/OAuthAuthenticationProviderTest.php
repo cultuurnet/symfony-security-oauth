@@ -88,6 +88,31 @@ class OAuthAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedToken, $returnedToken);
     }
 
+    public function testAuthenticateWithWrongTypeOfToken()
+    {
+        $requestParameters = array(
+            'oauth_consumer_key' => 'dpf43f3p2l4k3l03',
+            'oauth_token' => 'nnch734d00sl2jdk',
+            'oauth_signature_method' => 'HMAC-SHA1',
+            'oauth_timestamp' => time(),
+            'oauth_nonce' => 'kllo9940pd9333jh',
+            'oauth_version' => '1.0',
+            'file' => 'vacation.jpg',
+            'size' => 'original'
+        );
+        $consumerSecret = 'kd94hf93k423kf44';
+        $tokenSecret = 'pfkkdhi9sl3r4s00';
+
+        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $requestParameters['oauth_signature'] = $signature;
+
+        $token = new TokenMock();
+
+        $returnedToken = $this->oauthAuthenticationProvider->authenticate($token);
+
+        $this->assertEquals(null, $returnedToken, 'Returned token is null');
+    }
+
     /**
      * A helper function to calculate a signature. Necessary because we need recent timestamps.
      *
