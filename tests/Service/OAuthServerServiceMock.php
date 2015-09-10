@@ -8,6 +8,8 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Service;
 
+use CultuurNet\SymfonySecurityOAuth\Model\ConsumerInterface;
+use CultuurNet\SymfonySecurityOAuth\Model\TokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Service\Signature\OAuthSignatureInterface;
 
 class OAuthServerServiceMock extends OAuthServerService
@@ -29,5 +31,21 @@ class OAuthServerServiceMock extends OAuthServerService
     public function normalizeRequestParameters($requestParameters)
     {
         return parent::normalizeRequestParameters($requestParameters);
+    }
+
+    public function approveSignature(
+        ConsumerInterface $consumer,
+        $requestParameters,
+        $requestMethod,
+        $requestUrl,
+        TokenInterface $token = null
+    ) {
+        return parent::approveSignature(
+            $consumer,
+            $requestParameters,
+            $requestMethod,
+            $requestUrl,
+            $token
+        );
     }
 }

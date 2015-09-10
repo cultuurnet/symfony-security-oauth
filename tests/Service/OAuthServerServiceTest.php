@@ -8,6 +8,8 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Service;
 
+use CultuurNet\SymfonySecurityOAuth\Model\Consumer;
+use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use CultuurNet\SymfonySecurityOAuth\Service\Signature\OAuthHmacSha1Signature;
 
 class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
@@ -89,5 +91,51 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $normalizedParametersCalculated = $this->oauthServerService->normalizeRequestParameters($requestParameters);
 
         $this->assertEquals($normalizedParameters, $normalizedParametersCalculated);
+    }
+
+    public function testApproveSignature()
+    {
+        $consumer = new Consumer();
+        $consumer->setConsumerSecret('kd94hf93k423kf44');
+
+        $token = new Token();
+        $token->setSecret('pfkkdhi9sl3r4s00');
+
+        $this->oauthServerService->addSignatureService($this->signatureService);
+
+        $this->requestParameters['oauth_signature'] = 'tR3+Ty81lMeYAr/Fid0kMTYa/WM=';
+
+        $signatureIsApproved = $this->oauthServerService->approveSignature(
+            $consumer,
+            $this->requestParameters,
+            $this->requestMethod,
+            $this->requestUrl,
+            $token
+        );
+
+        $this->assertTrue($signatureIsApproved, 'Signature has been approved');
+    }
+
+    public function testApproveSignatureWithFaultyReference()
+    {
+        $consumer = new Consumer();
+        $consumer->setConsumerSecret('kd94hf93k423kf44');
+
+        $token = new Token();
+        $token->setSecret('pfkkdhi9sl3r4s00');
+
+        $this->oauthServerService->addSignatureService($this->signatureService);
+
+        $this->requestParameters['oauth_signature'] = 'testSignature';
+
+        $signatureIsApproved = $this->oauthServerService->approveSignature(
+            $consumer,
+            $this->requestParameters,
+            $this->requestMethod,
+            $this->requestUrl,
+            $token
+        );
+
+        $this->assertFalse($signatureIsApproved, 'Signature has not been approved');
     }
 }
