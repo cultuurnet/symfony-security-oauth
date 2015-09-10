@@ -8,12 +8,7 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Security;
 
-use CultuurNet\SymfonySecurityOAuth\Model\AccessTokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Service\OAuthServerServiceInterface;
-use CultuurNet\UitidCredentials\Entities\Consumer;
-use CultuurNet\UitidCredentials\Entities\Token;
-use CultuurNet\UitidCredentials\UitidCredentialsFetcher;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
