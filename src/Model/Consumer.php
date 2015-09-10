@@ -13,11 +13,6 @@ class Consumer implements ConsumerInterface
     /**
      * @var string
      */
-    protected $id;
-
-    /**
-     * @var string
-     */
     protected $name;
 
     /**
@@ -34,14 +29,6 @@ class Consumer implements ConsumerInterface
      * @var string
      */
     protected $callback;
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * {@inheritDoc}
@@ -91,23 +78,6 @@ class Consumer implements ConsumerInterface
     public function setConsumerSecret($consumerSecret)
     {
         $this->consumerSecret = $consumerSecret;
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getCallback()
-    {
-        return $this->callback;
-    }
-    
-    /**
-     * {@inheritDoc}
-     */
-    public function setCallback($callback)
-    {
-        $this->callback = $callback;
         return $this;
     }
 }
