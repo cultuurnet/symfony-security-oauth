@@ -148,7 +148,7 @@ class OAuthServerService extends OAuthAbstractServerService
             $requestToken
         )) {
             $token = $this->tokenProvider->createAccessToken($consumer, $user);
-            if ($token instanceof AccessTokenInterface) {
+            if ($token instanceof TokenInterface) {
                 if (null !== $requestToken) {
                     $this->tokenProvider->deleteRequestToken($requestToken);
                 }
