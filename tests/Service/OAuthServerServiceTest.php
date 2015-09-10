@@ -11,6 +11,7 @@ namespace CultuurNet\SymfonySecurityOAuth\Service;
 use CultuurNet\SymfonySecurityOAuth\Model\Consumer;
 use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use CultuurNet\SymfonySecurityOAuth\Service\Signature\OAuthHmacSha1Signature;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -48,7 +49,10 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
             'file' => 'vacation.jpg',
             'size' => 'original'
         );
-        $this->normalizedParameters = 'file=vacation.jpg&oauth_consumer_key=dpf43f3p2l4k3l03&oauth_nonce=kllo9940pd9333jh&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1191242096&oauth_token=nnch734d00sl2jdk&oauth_version=1.0&size=original';
+        $this->normalizedParameters = 'file=vacation.jpg&oauth_consumer_key=dpf43f3p2l4k3l03';
+        $this->normalizedParameters .= '&oauth_nonce=kllo9940pd9333jh&oauth_signature_method=HMAC-SHA1';
+        $this->normalizedParameters .= '&oauth_timestamp=1191242096&oauth_token=nnch734d00sl2jdk';
+        $this->normalizedParameters .= '&oauth_version=1.0&size=original';
         $this->requestMethod = 'GET';
         $this->requestUrl = 'http://photos.example.net/photos';
         $consumerProvider = new ConsumerProviderMock();
@@ -60,15 +64,18 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testGetSignatureBaseString()
     {
-        $signatureBaseString = 'GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacation.jpg%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3Dkllo9940pd9333jh%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1191242096%26oauth_token%3Dnnch734d00sl2jdk%26oauth_version%3D1.0%26size%3Doriginal';
-        $signatureBaseStringCalcultaed = $this->oauthServerService->getSignatureBaseString(
+        $signatureBaseString = 'GET&http%3A%2F%2Fphotos.example.net%2Fphotos&file%3Dvacation.jpg';
+        $signatureBaseString .= '%26oauth_consumer_key%3Ddpf43f3p2l4k3l03%26oauth_nonce%3Dkllo9940pd9333jh';
+        $signatureBaseString .= '%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D1191242096';
+        $signatureBaseString .= '%26oauth_token%3Dnnch734d00sl2jdk%26oauth_version%3D1.0%26size%3Doriginal';
+        $signatureBaseStringCalculated = $this->oauthServerService->getSignatureBaseString(
             $this->signatureService,
             $this->requestMethod,
             $this->requestUrl,
             $this->normalizedParameters
         );
 
-        $this->assertEquals($signatureBaseString, $signatureBaseStringCalcultaed);
+        $this->assertEquals($signatureBaseString, $signatureBaseStringCalculated);
     }
 
     public function testNormalizeRequestParameters()
@@ -137,5 +144,72 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         );
 
         $this->assertFalse($signatureIsApproved, 'Signature has not been approved');
+    }
+
+    public function testValidateRequest()
+    {
+        $requestParameters = $this->requestParameters;
+        $requestParameters['oauth_timestamp'] = time();
+        $consumerSecret = 'kd94hf93k423kf44';
+        $tokenSecret = 'pfkkdhi9sl3r4s00';
+        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $requestParameters['oauth_signature'] = $signature;
+        $this->oauthServerService->addSignatureService($this->signatureService);
+
+        $hasBeenValidated = $this->oauthServerService->validateRequest(
+            $requestParameters,
+            $this->requestMethod,
+            $this->requestUrl
+        );
+
+        $this->assertTrue($hasBeenValidated);
+    }
+
+    public function testValidateRequestWithBadData()
+    {
+        $requestParameters = $this->requestParameters;
+        $consumerSecret = 'kd94hf93k423kf44';
+        $tokenSecret = 'pfkkdhi9sl3r4s00';
+        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+
+        $requestParameters = array(
+            'oauth_consumer_key' => 'testConsumer',
+            'oauth_token' => 'testToken',
+            'oauth_signature' => $signature,
+            'oauth_signature_method' => 'HMAC-SHA1',
+            'oauth_timestamp' => time(),
+            'oauth_nonce' => 'testNonce',
+            'oauth_version' => '1.0',
+            'file' => 'vacation.jpg',
+            'size' => 'original'
+        );
+        $this->oauthServerService->addSignatureService($this->signatureService);
+
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'signature_invalid');
+
+        $hasBeenValidated = $this->oauthServerService->validateRequest(
+            $requestParameters,
+            $this->requestMethod,
+            $this->requestUrl
+        );
+    }
+
+    /**
+     * A helper function to calculate a signature. Necessary because we need recent timestamps.
+     */
+    public function calculateSignature($requestParameters, $consumerSecret, $tokenSecret)
+    {
+        $normalizedParameters = $this->oauthServerService->normalizeRequestParameters($requestParameters);
+
+        $signatureBaseString = $this->oauthServerService->getSignatureBaseString(
+            $this->signatureService,
+            $this->requestMethod,
+            $this->requestUrl,
+            $normalizedParameters
+        );
+
+        $oauthSignature = $this->signatureService->sign($signatureBaseString, $consumerSecret, $tokenSecret);
+
+        return $oauthSignature;
     }
 }
