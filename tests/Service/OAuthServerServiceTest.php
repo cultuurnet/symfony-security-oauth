@@ -100,6 +100,27 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($normalizedParameters, $normalizedParametersCalculated);
     }
 
+    public function testNormalizeRequestParametersWithNullAsParameters()
+    {
+        $requestParameters = null;
+
+        $normalizedParametersCalculated = $this->oauthServerService->normalizeRequestParameters($requestParameters);
+
+        $this->assertEquals(null, $normalizedParametersCalculated);
+    }
+
+    public function testNormalizeRequestParametersWithArrayValue()
+    {
+        $requestParameters = $this->requestParameters;
+        $requestParameters['test'] = array('foo', 'bar');
+        $normalizedParameters = $this->normalizedParameters;
+        $normalizedParameters .= '&test=bar&test=foo';
+
+        $normalizedParametersCalculated = $this->oauthServerService->normalizeRequestParameters($requestParameters);
+
+        $this->assertEquals($normalizedParameters, $normalizedParametersCalculated);
+    }
+
     public function testApproveSignature()
     {
         $consumer = new Consumer();
