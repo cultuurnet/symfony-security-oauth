@@ -178,7 +178,6 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
             'oauth_nonce',
             'oauth_signature',
             'oauth_timestamp',
-            'oauth_verifier',
             'oauth_token'
         );
         $this->requiredParamsForValidRequest = array(
