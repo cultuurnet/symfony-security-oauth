@@ -327,9 +327,9 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      * @see http://oauth.net/core/1.O/#rfc.section.9.1.3
      *
      * @param  OAuthSignatureInterface $signatureService A signature service.
-     * @param  string                  $requestMethod    The request method (POST, GET, ...)
-     * @param  string                  $requestUrl       The request url (see http://oauth.net/core/1.0/#rfc.section.9.1.2)
-     * @param  string                  $normalizedParameters
+     * @param  string $requestMethod    The request method (POST, GET, ...)
+     * @param  string $requestUrl       The request url (see http://oauth.net/core/1.0/#rfc.section.9.1.2)
+     * @param  string $normalizedParameters
      * @return string
      */
     protected function getSignatureBaseString(
@@ -377,27 +377,5 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
         $calculatedSignature = $signatureService->sign($baseString, $consumer->getConsumerSecret(), $secretToken);
 
         return ($calculatedSignature === $requestParameters['oauth_signature']);
-    }
-
-    /**
-     * Returns a string for a given token according to the RFC.
-     *
-     * @param  TokenInterface $token    A token.
-     * @param  array          $extras   An array of extra parameters to add in the response.
-     * @param  integer        $lifetime The token lifetime.
-     * @return string
-     */
-    protected function sendToken(TokenInterface $token, $lifetime = 3600, array $extras = array())
-    {
-        $returnedParameters = array();
-        $returnedParameters['oauth_token'] = $token->getToken();
-        $returnedParameters['oauth_token_secret'] = $token->getSecret();
-        $returnedParameters['oauth_expires_in'] = (null !== $token->getExpiresIn()) ? $token->getExpiresIn() : $lifetime;
-
-        foreach ($extras as $key => $value) {
-            $returnedParameters[$key] = $value;
-        }
-
-        return http_build_query($returnedParameters);
     }
 }
