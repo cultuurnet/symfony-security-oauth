@@ -9,6 +9,8 @@
 namespace CultuurNet\SymfonySecurityOAuth\EventListener;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class OAuthRequestListenerTest extends \PHPUnit_Framework_TestCase
 {
@@ -79,5 +81,37 @@ class OAuthRequestListenerTest extends \PHPUnit_Framework_TestCase
         $request    = Request::create('https://test.com');
         $requestUrl = $this->listener->buildRequestUrl($request);
         $this->assertEquals('https://test.com/', $requestUrl, '');
+    }
+
+    public function testOnEarlyKernelRequest()
+    {
+        $kernel = new KernelMock();
+        $this->request->headers->set('Authorization', 'OAuth oauth_token=testtoken,oauth_consumer_key=testconsumerkey');
+        $responseEvent = new GetResponseEvent($kernel, $this->request, HttpKernelInterface::MASTER_REQUEST);
+
+        $this->listener->onEarlyKernelRequest($responseEvent);
+        $request = $responseEvent->getRequest();
+
+        $expectedRequest = new Request();
+        $header = 'OAuth oauth_token=testtoken,oauth_consumer_key=testconsumerkey';
+        $expectedRequest->headers->set('Authorization', $header);
+        $parameters = $this->listener->parseAuthorizationHeader($expectedRequest);
+        $expectedRequest->setMethod('GET');
+        $expectedRequest->attributes->set('oauth_request_parameters', $parameters);
+        $expectedRequest->attributes->set('oauth_request_method', 'GET');
+        $expectedRequest->attributes->set('oauth_request_url', 'http://:/');
+
+        $this->assertEquals(
+            $expectedRequest->attributes->get('oauth_request_parameters'),
+            $request->attributes->get('oauth_request_parameters')
+        );
+        $this->assertEquals(
+            $expectedRequest->attributes->get('oauth_request_method'),
+            $request->attributes->get('oauth_request_method')
+        );
+        $this->assertEquals(
+            $expectedRequest->attributes->get('oauth_request_url'),
+            $request->attributes->get('oauth_request_url')
+        );
     }
 }
