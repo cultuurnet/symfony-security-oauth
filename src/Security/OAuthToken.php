@@ -38,10 +38,12 @@ class OAuthToken extends AbstractToken
      * @var array
      */
     protected $requestParameters;
+
     /**
      * @var string
      */
     protected $requestMethod;
+
     /**
      * @var string
      */
@@ -54,6 +56,7 @@ class OAuthToken extends AbstractToken
     {
         $this->requestParameters = $parameters;
     }
+
     /**
      * @return array An array of request parameters.
      */
@@ -61,6 +64,7 @@ class OAuthToken extends AbstractToken
     {
         return $this->requestParameters;
     }
+
     /**
      * @param string $requestMethod A request method.
      */
@@ -68,6 +72,7 @@ class OAuthToken extends AbstractToken
     {
         $this->requestMethod = $requestMethod;
     }
+
     /**
      * @return string The request method.
      */
@@ -75,6 +80,7 @@ class OAuthToken extends AbstractToken
     {
         return $this->requestMethod;
     }
+
     /**
      * @param string $requestUrl A request URL.
      */
@@ -82,6 +88,7 @@ class OAuthToken extends AbstractToken
     {
         $this->requestUrl = $requestUrl;
     }
+
     /**
      * @return string The request URL.
      */
@@ -89,11 +96,13 @@ class OAuthToken extends AbstractToken
     {
         return $this->requestUrl;
     }
+
     /**
      * {@inheritdoc}
      */
     public function getCredentials()
     {
+        // @TODO Implement this necessary method.
         return '';
     }
 }
