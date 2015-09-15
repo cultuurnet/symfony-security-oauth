@@ -13,6 +13,7 @@ use CultuurNet\Clock\SystemClock;
 use CultuurNet\SymfonySecurityOAuth\Model\Consumer;
 use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use CultuurNet\SymfonySecurityOAuth\Service\Signature\OAuthHmacSha1Signature;
+use DateTimeZone;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
@@ -172,9 +173,9 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     public function testValidateRequest()
     {
         $requestParameters = $this->requestParameters;
-        $localTimeZone = new \DateTimeZone('Europe/Brussels');
+        $localTimeZone = new DateTimeZone('Europe/Brussels');
         $clock = new SystemClock($localTimeZone);
-        $requestParameters['oauth_timestamp'] = $clock->getDateTime();
+        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
         $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
@@ -197,14 +198,14 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $tokenSecret = 'pfkkdhi9sl3r4s00';
         $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
         $localTimeZone = new \DateTimeZone('Europe/Brussels');
-        $clock = new Clock\SystemClock($localTimeZone);
+        $clock = new SystemClock($localTimeZone);
 
         $requestParameters = array(
             'oauth_consumer_key' => 'testConsumer',
             'oauth_token' => 'testToken',
             'oauth_signature' => $signature,
             'oauth_signature_method' => 'HMAC-SHA1',
-            'oauth_timestamp' => $clock->getDateTime(),
+            'oauth_timestamp' => $clock->getDateTime()->getTimestamp(),
             'oauth_nonce' => 'testNonce',
             'oauth_version' => '1.0',
             'file' => 'vacation.jpg',
@@ -230,14 +231,14 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
 
         $futureTimestamp = $now->add($interval);
         $clock = new FrozenClock($futureTimestamp);
-        $requestParameters['oauth_timestamp'] = $clock->getDateTime();
+        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
         $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
         $requestParameters['oauth_signature'] = $signature;
         $this->oauthServerService->addSignatureService($this->signatureService);
 
-        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'signature_invalid');
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'timestamp_refused');
 
         $hasBeenValidated = $this->oauthServerService->validateRequest(
             $requestParameters,
