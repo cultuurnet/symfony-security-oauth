@@ -22,7 +22,11 @@ class NonceProviderMock implements NonceProviderInterface
      */
     public function checkNonceAndTimestampUnicity($nonce, $timestamp, ConsumerInterface $consumer)
     {
-        // TODO: Implement checkNonceAndTimestampUnicity() method.
+        if ($nonce == 'returnFalse') {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**

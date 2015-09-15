@@ -247,6 +247,120 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testValidateRequestWithoutRequestParameters()
+    {
+        $requestParameters = $this->requestParameters;
+        $localTimeZone = new DateTimeZone('Europe/Brussels');
+        $clock = new SystemClock($localTimeZone);
+        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
+        $consumerSecret = 'kd94hf93k423kf44';
+        $tokenSecret = 'pfkkdhi9sl3r4s00';
+        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $requestParameters['oauth_signature'] = $signature;
+        $this->oauthServerService->addSignatureService($this->signatureService);
+
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'parameter_absent');
+
+        $hasBeenValidated = $this->oauthServerService->validateRequest(
+            null,
+            $this->requestMethod,
+            $this->requestUrl
+        );
+    }
+
+    public function testValidateRequestWithoutARequiredParameter()
+    {
+        $requestParameters = $this->requestParameters;
+        unset($requestParameters['oauth_nonce']);
+        $localTimeZone = new DateTimeZone('Europe/Brussels');
+        $clock = new SystemClock($localTimeZone);
+        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
+        $consumerSecret = 'kd94hf93k423kf44';
+        $tokenSecret = 'pfkkdhi9sl3r4s00';
+        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $requestParameters['oauth_signature'] = $signature;
+        $this->oauthServerService->addSignatureService($this->signatureService);
+
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'parameter_absent');
+
+        $hasBeenValidated = $this->oauthServerService->validateRequest(
+            $requestParameters,
+            $this->requestMethod,
+            $this->requestUrl
+        );
+    }
+
+    public function testValidateRequestWithWrongOAuthVersion()
+    {
+        $requestParameters = $this->requestParameters;
+        $requestParameters['oauth_version'] = '35A';
+        $localTimeZone = new DateTimeZone('Europe/Brussels');
+        $clock = new SystemClock($localTimeZone);
+        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
+        $consumerSecret = 'kd94hf93k423kf44';
+        $tokenSecret = 'pfkkdhi9sl3r4s00';
+        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $requestParameters['oauth_signature'] = $signature;
+        $this->oauthServerService->addSignatureService($this->signatureService);
+
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'version_rejected');
+
+        $hasBeenValidated = $this->oauthServerService->validateRequest(
+            $requestParameters,
+            $this->requestMethod,
+            $this->requestUrl
+        );
+    }
+
+    public function testValidateRequestWithFaultyNonce()
+    {
+        $requestParameters = $this->requestParameters;
+        $requestParameters['oauth_nonce'] = 'returnFalse';
+        $localTimeZone = new DateTimeZone('Europe/Brussels');
+        $clock = new SystemClock($localTimeZone);
+        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
+        $consumerSecret = 'kd94hf93k423kf44';
+        $tokenSecret = 'pfkkdhi9sl3r4s00';
+        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $requestParameters['oauth_signature'] = $signature;
+        $this->oauthServerService->addSignatureService($this->signatureService);
+
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'nonce_used');
+
+        $hasBeenValidated = $this->oauthServerService->validateRequest(
+            $requestParameters,
+            $this->requestMethod,
+            $this->requestUrl
+        );
+    }
+
+    public function testValidateRequestTokenError()
+    {
+        $requestParameters = $this->requestParameters;
+        $requestParameters['oauth_token'] = 'returnBadToken';
+        $localTimeZone = new DateTimeZone('Europe/Brussels');
+        $clock = new SystemClock($localTimeZone);
+        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
+        $consumerSecret = 'kd94hf93k423kf44';
+        $tokenSecret = 'pfkkdhi9sl3r4s00';
+        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $requestParameters['oauth_signature'] = $signature;
+        $this->oauthServerService->addSignatureService($this->signatureService);
+
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'token_rejected');
+
+        $hasBeenValidated = $this->oauthServerService->validateRequest(
+            $requestParameters,
+            $this->requestMethod,
+            $this->requestUrl
+        );
+    }
+
+    public function testGetSignatureServiceException()
+    {
+
+    }
+
     /**
      * A helper function to calculate a signature. Necessary because we need recent timestamps.
      *

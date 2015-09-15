@@ -74,7 +74,7 @@ class OAuthServerService extends OAuthAbstractServerService
 
         foreach ($requiredParameters as $requiredParameter) {
             if (false === array_key_exists($requiredParameter, $requestParameters)) {
-                throw new HttpException(400, $requiredParameter . ' ' . self::ERROR_PARAMETER_ABSENT);
+                throw new HttpException(400, self::ERROR_PARAMETER_ABSENT);
             }
         }
 

@@ -21,20 +21,24 @@ class TokenProviderMock implements TokenProviderInterface
      */
     public function getAccessTokenByToken($oauth_token)
     {
-        $token = new Token();
-        $token->setToken('nnch734d00sl2jdk');
-        $token->setSecret('pfkkdhi9sl3r4s00');
+        if ($oauth_token == 'returnBadToken') {
+            return new BadTokenMock();
+        } else {
+            $token = new Token();
+            $token->setToken('nnch734d00sl2jdk');
+            $token->setSecret('pfkkdhi9sl3r4s00');
 
-        $consumer = new Consumer();
-        $consumer->setConsumerKey('dpf43f3p2l4k3l03');
-        $consumer->setConsumerSecret('kd94hf93k423kf44');
-        $consumer->setName('testConsumer');
+            $consumer = new Consumer();
+            $consumer->setConsumerKey('dpf43f3p2l4k3l03');
+            $consumer->setConsumerSecret('kd94hf93k423kf44');
+            $consumer->setName('testConsumer');
 
-        $token->setConsumer($consumer);
+            $token->setConsumer($consumer);
 
-        $user = new UserMock('123456789', 'testUser', 'email@email.email');
+            $user = new UserMock('123456789', 'testUser', 'email@email.email');
 
-        $token->setUser($user);
+            $token->setUser($user);
+        }
 
         return $token;
     }
