@@ -356,11 +356,6 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testGetSignatureServiceException()
-    {
-
-    }
-
     /**
      * A helper function to calculate a signature. Necessary because we need recent timestamps.
      *
