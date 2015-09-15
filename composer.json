@@ -18,7 +18,6 @@
       }
     ],
     "require": {
-      "cultuurnet/uitid-credentials": "~0.1",
       "symfony/security": "~2.7.3"
     },
     "require-dev": {
