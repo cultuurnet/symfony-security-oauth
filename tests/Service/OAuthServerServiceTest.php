@@ -8,7 +8,8 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Service;
 
-use CultuurNet\Clock;
+use CultuurNet\Clock\FrozenClock;
+use CultuurNet\Clock\SystemClock;
 use CultuurNet\SymfonySecurityOAuth\Model\Consumer;
 use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use CultuurNet\SymfonySecurityOAuth\Service\Signature\OAuthHmacSha1Signature;
@@ -172,7 +173,7 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $requestParameters = $this->requestParameters;
         $localTimeZone = new \DateTimeZone('Europe/Brussels');
-        $clock = new Clock\SystemClock($localTimeZone);
+        $clock = new SystemClock($localTimeZone);
         $requestParameters['oauth_timestamp'] = $clock->getDateTime();
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
@@ -228,7 +229,7 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $interval= new \DateInterval('PT' . $extendedInterval . 'S');
 
         $futureTimestamp = $now->add($interval);
-        $clock = new Clock\FrozenClock($futureTimestamp);
+        $clock = new FrozenClock($futureTimestamp);
         $requestParameters['oauth_timestamp'] = $clock->getDateTime();
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
