@@ -8,6 +8,7 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Service;
 
+use CultuurNet\Clock;
 use CultuurNet\SymfonySecurityOAuth\Model\Consumer;
 use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use CultuurNet\SymfonySecurityOAuth\Service\Signature\OAuthHmacSha1Signature;
@@ -170,7 +171,9 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     public function testValidateRequest()
     {
         $requestParameters = $this->requestParameters;
-        $requestParameters['oauth_timestamp'] = time();
+        $localTimeZone = new \DateTimeZone('Europe/Brussels');
+        $clock = new Clock\SystemClock($localTimeZone);
+        $requestParameters['oauth_timestamp'] = $clock->getDateTime();
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
         $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
@@ -192,18 +195,45 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
         $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $localTimeZone = new \DateTimeZone('Europe/Brussels');
+        $clock = new Clock\SystemClock($localTimeZone);
 
         $requestParameters = array(
             'oauth_consumer_key' => 'testConsumer',
             'oauth_token' => 'testToken',
             'oauth_signature' => $signature,
             'oauth_signature_method' => 'HMAC-SHA1',
-            'oauth_timestamp' => time(),
+            'oauth_timestamp' => $clock->getDateTime(),
             'oauth_nonce' => 'testNonce',
             'oauth_version' => '1.0',
             'file' => 'vacation.jpg',
             'size' => 'original'
         );
+        $this->oauthServerService->addSignatureService($this->signatureService);
+
+        $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'signature_invalid');
+
+        $hasBeenValidated = $this->oauthServerService->validateRequest(
+            $requestParameters,
+            $this->requestMethod,
+            $this->requestUrl
+        );
+    }
+
+    public function testValidateRequestWithBadTimestamp()
+    {
+        $requestParameters = $this->requestParameters;
+        $now = new \DateTime('now');
+        $extendedInterval = $this->oauthServerService->getRequestTokenInterval() * 2;
+        $interval= new \DateInterval('PT' . $extendedInterval . 'S');
+
+        $futureTimestamp = $now->add($interval);
+        $clock = new Clock\FrozenClock($futureTimestamp);
+        $requestParameters['oauth_timestamp'] = $clock->getDateTime();
+        $consumerSecret = 'kd94hf93k423kf44';
+        $tokenSecret = 'pfkkdhi9sl3r4s00';
+        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $requestParameters['oauth_signature'] = $signature;
         $this->oauthServerService->addSignatureService($this->signatureService);
 
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'signature_invalid');
