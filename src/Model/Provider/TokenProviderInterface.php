@@ -15,10 +15,4 @@ interface TokenProviderInterface
      * @return \CultuurNet\SymfonySecurityOAuth\Model\TokenInterface
      */
     public function getAccessTokenByToken($oauth_token);
-
-    /**
-     * @param \CultuurNet\SymfonySecurityOAuth\Model\TokenInterface $token
-     * @return mixed
-     */
-    public function deleteAccessToken($token);
 }
