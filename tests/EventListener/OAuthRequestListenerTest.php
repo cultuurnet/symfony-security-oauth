@@ -133,7 +133,7 @@ class OAuthRequestListenerTest extends \PHPUnit_Framework_TestCase
     public function testOnEarlyKernelAccessWithoutTokenAndConsumer()
     {
         $kernel = new KernelMock();
-        $this->request->headers->set('Authorization', 'OAuth oauth_token=testtoken,oauth_nonce=nonceke');
+        $this->request->headers->set('Authorization', 'OAuth oauth_nonce=nonceke');
         $responseEvent = new GetResponseEvent($kernel, $this->request, HttpKernelInterface::MASTER_REQUEST);
 
         $this->listener->onEarlyKernelRequest($responseEvent);
