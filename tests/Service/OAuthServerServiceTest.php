@@ -356,6 +356,25 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    public function testCheckConsumer()
+    {
+        $consumer = new UserMock('123', 'Jos', 'jos@jos.com');
+        $this->setExpectedException(
+            'Symfony\Component\HttpKernel\Exception\HttpException',
+            'consumer_key_unknown'
+        );
+        $this->oauthServerService->checkConsumer($consumer);
+    }
+
+    public function testGetSignatureService()
+    {
+        $this->setExpectedException(
+            'Symfony\Component\HttpKernel\Exception\HttpException',
+            'signature_method_rejected'
+        );
+        $this->oauthServerService->getSignatureService('FakeSignatureService');
+    }
+
     /**
      * A helper function to calculate a signature. Necessary because we need recent timestamps.
      *
