@@ -22,7 +22,7 @@ interface OAuthServerServiceInterface
      *
      * @return \CultuurNet\Clock\Clock
      */
-    public function getClockProvider();
+    public function getClock();
 
     /**
      * Returns the consumer provider in use.

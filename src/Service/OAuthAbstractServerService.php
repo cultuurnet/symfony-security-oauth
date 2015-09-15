@@ -129,7 +129,7 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     /**
      * @var Clock
      */
-    protected $clockProvider;
+    protected $clock;
 
     /**
      * An array of signature services that implement OAuthSignatureInterface.
@@ -161,18 +161,18 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      * @param ConsumerProviderInterface $consumerProvider The consumer provider.
      * @param TokenProviderInterface $tokenProvider The token provider.
      * @param NonceProviderInterface $nonceProvider The nonce provider.
-     * @param Clock $clockProvider The clock provider
+     * @param Clock $clock The clock provider
      */
     public function __construct(
         ConsumerProviderInterface $consumerProvider,
         TokenProviderInterface $tokenProvider,
         NonceProviderInterface $nonceProvider,
-        Clock $clockProvider
+        Clock $clock
     ) {
         $this->consumerProvider  = $consumerProvider;
         $this->tokenProvider     = $tokenProvider;
         $this->nonceProvider     = $nonceProvider;
-        $this->clockProvider     = $clockProvider;
+        $this->clock             = $clock;
         $this->signatureServices = array();
         $this->requiredParamsForRequestToken = array(
             'oauth_consumer_key',
@@ -212,9 +212,9 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      * {@inheritdoc}
      * @return \CultuurNet\Clock\Clock
      */
-    public function getClockProvider()
+    public function getClock()
     {
-        return $this->clockProvider;
+        return $this->clock;
     }
 
     /**
@@ -289,8 +289,8 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      */
     protected function checkTimestamp($oauthTimestamp)
     {
-        $maxTimestamp = $this->getClockProvider()->getDateTime()->getTimestamp() + $this->getRequestTokenInterval();
-        $minTimestamp = $this->getClockProvider()->getDateTime()->getTimestamp() - $this->getRequestTokenInterval();
+        $maxTimestamp = $this->getClock()->getDateTime()->getTimestamp() + $this->getRequestTokenInterval();
+        $minTimestamp = $this->getClock()->getDateTime()->getTimestamp() - $this->getRequestTokenInterval();
 
         return ($oauthTimestamp > $minTimestamp && $oauthTimestamp < $maxTimestamp);
     }

@@ -62,8 +62,9 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $tokenProvider = new TokenProviderMock();
         $nonceProvider = new NonceProviderMock();
         $localTimeZone = new DateTimeZone('Europe/Brussels');
-        $clockProvider = new SystemClock($localTimeZone);
-        $this->oauthServerService = new OAuthServerServiceMock($consumerProvider, $tokenProvider, $nonceProvider, $clockProvider);
+        $clock = new SystemClock($localTimeZone);
+
+        $this->oauthServerService = new OAuthServerServiceMock($consumerProvider, $tokenProvider, $nonceProvider, $clock);
         $this->signatureService = new OAuthHmacSha1Signature();
     }
 
