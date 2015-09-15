@@ -121,11 +121,6 @@ class OAuthServerService extends OAuthAbstractServerService
             throw new HttpException(401, self::ERROR_SIGNATURE_INVALID);
         }
 
-        if ($token->hasExpired()) {
-            $this->tokenProvider->deleteAccessToken($token);
-            throw new HttpException(401, self::ERROR_TOKEN_EXPIRED);
-        }
-
         return true;
     }
 }
