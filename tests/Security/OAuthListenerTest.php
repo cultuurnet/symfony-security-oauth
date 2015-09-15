@@ -86,4 +86,20 @@ class OAuthListenerTest extends \PHPUnit_Framework_TestCase
 
         $this->oauthListener->handle($responseEvent);
     }
+
+    public function testHandleWithRequestParametersNull()
+    {
+        $kernel = new KernelMock();
+        $request = new Request();
+
+        $request->attributes->set('oauth_request_parameters', false);
+        $request->attributes->set('oauth_request_method', 'GET');
+        $request->attributes->set('oauth_request_url', 'http://test.com');
+
+        $responseEvent = new GetResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
+
+        $return = $this->oauthListener->handle($responseEvent);
+
+        $this->assertEquals(null, $return);
+    }
 }
