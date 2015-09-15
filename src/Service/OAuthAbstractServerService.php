@@ -8,6 +8,7 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Service;
 
+use CultuurNet\Clock\Clock;
 use CultuurNet\SymfonySecurityOAuth\Model\ConsumerInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\TokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\Provider\ConsumerProviderInterface;
@@ -126,6 +127,11 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     protected $nonceProvider;
 
     /**
+     * @var Clock
+     */
+    protected $clockProvider;
+
+    /**
      * An array of signature services that implement OAuthSignatureInterface.
      * @var array
      */
@@ -153,17 +159,20 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      * Constructor.
      *
      * @param ConsumerProviderInterface $consumerProvider The consumer provider.
-     * @param TokenProviderInterface    $tokenProvider    The token provider.
-     * @param NonceProviderInterface    $nonceProvider    The nonce provider.
+     * @param TokenProviderInterface $tokenProvider The token provider.
+     * @param NonceProviderInterface $nonceProvider The nonce provider.
+     * @param Clock $clockProvider The clock provider
      */
     public function __construct(
         ConsumerProviderInterface $consumerProvider,
         TokenProviderInterface $tokenProvider,
-        NonceProviderInterface $nonceProvider
+        NonceProviderInterface $nonceProvider,
+        Clock $clockProvider
     ) {
         $this->consumerProvider  = $consumerProvider;
         $this->tokenProvider     = $tokenProvider;
         $this->nonceProvider     = $nonceProvider;
+        $this->clockProvider     = $clockProvider;
         $this->signatureServices = array();
         $this->requiredParamsForRequestToken = array(
             'oauth_consumer_key',
@@ -197,6 +206,15 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     public function getTokenProvider()
     {
         return $this->tokenProvider;
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return \CultuurNet\Clock\Clock
+     */
+    public function getClockProvider()
+    {
+        return $this->clockProvider;
     }
 
     /**
@@ -271,8 +289,8 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      */
     protected function checkTimestamp($oauthTimestamp)
     {
-        $maxTimestamp = time() + $this->getRequestTokenInterval();
-        $minTimestamp = time() - $this->getRequestTokenInterval();
+        $maxTimestamp = $this->getClockProvider()->getDateTime()->getTimestamp() + $this->getRequestTokenInterval();
+        $minTimestamp = $this->getClockProvider()->getDateTime()->getTimestamp() - $this->getRequestTokenInterval();
 
         return ($oauthTimestamp > $minTimestamp && $oauthTimestamp < $maxTimestamp);
     }

@@ -8,12 +8,14 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Security;
 
+use CultuurNet\Clock\SystemClock;
 use CultuurNet\SymfonySecurityOAuth\Service\ConsumerProviderMock;
 use CultuurNet\SymfonySecurityOAuth\Service\NonceProviderMock;
 use CultuurNet\SymfonySecurityOAuth\Service\OAuthServerServiceMock;
 use CultuurNet\SymfonySecurityOAuth\Service\Signature\OAuthHmacSha1Signature;
 use CultuurNet\SymfonySecurityOAuth\Service\TokenProviderMock;
 use CultuurNet\SymfonySecurityOAuth\Service\UserMock;
+use DateTimeZone;
 
 class OAuthAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
 {
@@ -47,7 +49,9 @@ class OAuthAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $consumerProvider = new ConsumerProviderMock();
         $tokenProvider = new TokenProviderMock();
         $nonceProvider = new NonceProviderMock();
-        $this->oauthServerService = new OAuthServerServiceMock($consumerProvider, $tokenProvider, $nonceProvider);
+        $localTimeZone = new DateTimeZone('Europe/Brussels');
+        $clock = new SystemClock($localTimeZone);
+        $this->oauthServerService = new OAuthServerServiceMock($consumerProvider, $tokenProvider, $nonceProvider, $clock);
         $this->signatureService = new OAuthHmacSha1Signature();
         $this->oauthServerService->addSignatureService($this->signatureService);
         $userProvider = new UserProviderMock();

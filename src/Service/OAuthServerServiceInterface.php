@@ -18,6 +18,13 @@ interface OAuthServerServiceInterface
     public function getTokenProvider();
 
     /**
+     * Returns the clock provider in use.
+     *
+     * @return \CultuurNet\Clock\Clock
+     */
+    public function getClockProvider();
+
+    /**
      * Returns the consumer provider in use.
      *
      * @return \CultuurNet\SymfonySecurityOAuth\Model\Provider\ConsumerProviderInterface
