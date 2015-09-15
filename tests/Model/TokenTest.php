@@ -65,4 +65,11 @@ class TokenTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expiresIn, $expiresInCalculated, 'ExpiresIn gets calculated perfectly');
         $this->assertTrue($token->hasExpired(), 'The token has expired');
     }
+
+    public function testTokenHasExpiredByGivingNoExpiresAt()
+    {
+        $token = new Token();
+
+        $this->assertFalse($token->hasExpired(), 'The token returns false when no expiresAt is set');
+    }
 }
