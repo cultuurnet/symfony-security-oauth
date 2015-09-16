@@ -61,8 +61,9 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $consumerProvider = new ConsumerProviderMock();
         $tokenProvider = new TokenProviderMock();
         $nonceProvider = new NonceProviderMock();
-        $localTimeZone = new DateTimeZone('Europe/Brussels');
-        $clock = new SystemClock($localTimeZone);
+        $fixedTimestamp = new \DateTime();
+        $fixedTimestamp->setTimestamp(1433160000);
+        $clock = new FrozenClock($fixedTimestamp);
 
         $this->oauthServerService = new OAuthServerServiceMock($consumerProvider, $tokenProvider, $nonceProvider, $clock);
         $this->signatureService = new OAuthHmacSha1Signature();
@@ -177,9 +178,8 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $requestParameters = $this->requestParameters;
         $requestParameters['oauth_timestamp'] = $this->oauthServerService->getClock()->getDateTime()->getTimestamp();
-        $consumerSecret = 'kd94hf93k423kf44';
-        $tokenSecret = 'pfkkdhi9sl3r4s00';
-        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $signature = 'dwEfwtMrnGvGbxqXtv0q4BRRmLg=';
+
         $requestParameters['oauth_signature'] = $signature;
         $this->oauthServerService->addSignatureService($this->signatureService);
 
@@ -194,10 +194,8 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
 
     public function testValidateRequestWithBadData()
     {
-        $requestParameters = $this->requestParameters;
-        $consumerSecret = 'kd94hf93k423kf44';
-        $tokenSecret = 'pfkkdhi9sl3r4s00';
-        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $signature = 'tR3+Ty81lMeYAr/Fid0kMTYa/WM=';
+        var_dump($signature);
         $clock = $this->oauthServerService->getClock();
 
         $requestParameters = array(
@@ -231,7 +229,8 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
-        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $signature = 'tR3+Ty81lMeYAr/Fid0kMTYa/WM=';
+
         $requestParameters['oauth_signature'] = $signature;
         $this->oauthServerService->addSignatureService($this->signatureService);
 
