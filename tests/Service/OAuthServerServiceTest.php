@@ -176,9 +176,7 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     public function testValidateRequest()
     {
         $requestParameters = $this->requestParameters;
-        $localTimeZone = new DateTimeZone('Europe/Brussels');
-        $clock = new SystemClock($localTimeZone);
-        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
+        $requestParameters['oauth_timestamp'] = $this->oauthServerService->getClock()->getDateTime()->getTimestamp();
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
         $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
@@ -228,12 +226,9 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     public function testValidateRequestWithBadTimestamp()
     {
         $requestParameters = $this->requestParameters;
-        $now = new \DateTime('now');
-        $extendedInterval = $this->oauthServerService->getRequestTokenInterval() * 2;
-        $interval= new \DateInterval('PT' . $extendedInterval . 'S');
-
-        $futureTimestamp = $now->add($interval);
-        $clock = new FrozenClock($futureTimestamp);
+        $fixedTimeInThePast = new \DateTime();
+        $fixedTimeInThePast->setTimestamp(1420113600);
+        $clock = new FrozenClock($fixedTimeInThePast);
         $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
