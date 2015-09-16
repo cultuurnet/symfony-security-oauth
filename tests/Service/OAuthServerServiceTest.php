@@ -195,7 +195,6 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     public function testValidateRequestWithBadData()
     {
         $signature = 'tR3+Ty81lMeYAr/Fid0kMTYa/WM=';
-        var_dump($signature);
         $clock = $this->oauthServerService->getClock();
 
         $requestParameters = array(
@@ -290,13 +289,14 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $requestParameters = $this->requestParameters;
         $requestParameters['oauth_version'] = '35A';
-        $localTimeZone = new DateTimeZone('Europe/Brussels');
-        $clock = new SystemClock($localTimeZone);
+        $clock = $this->oauthServerService->getClock();
+
         $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
-        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $signature = 'gnlHX1gSvz30mAMaV6xWc5Stz78=';
         $requestParameters['oauth_signature'] = $signature;
+        //var_dump($signature);
         $this->oauthServerService->addSignatureService($this->signatureService);
 
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'version_rejected');
@@ -312,12 +312,11 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $requestParameters = $this->requestParameters;
         $requestParameters['oauth_nonce'] = 'returnFalse';
-        $localTimeZone = new DateTimeZone('Europe/Brussels');
-        $clock = new SystemClock($localTimeZone);
+        $clock = $this->oauthServerService->getClock();
         $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
-        $consumerSecret = 'kd94hf93k423kf44';
-        $tokenSecret = 'pfkkdhi9sl3r4s00';
-        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+
+        $signature = '2vT3xOR/Xij2DN1Ns3R8UNQ/N+g=';
+
         $requestParameters['oauth_signature'] = $signature;
         $this->oauthServerService->addSignatureService($this->signatureService);
 
@@ -334,12 +333,10 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $requestParameters = $this->requestParameters;
         $requestParameters['oauth_token'] = 'returnBadToken';
-        $localTimeZone = new DateTimeZone('Europe/Brussels');
-        $clock = new SystemClock($localTimeZone);
+        $clock = $this->oauthServerService->getClock();
+
         $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
-        $consumerSecret = 'kd94hf93k423kf44';
-        $tokenSecret = 'pfkkdhi9sl3r4s00';
-        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $signature = 'btZnOkU+lCRSAAK5q9riQc4VbZE=';
         $requestParameters['oauth_signature'] = $signature;
         $this->oauthServerService->addSignatureService($this->signatureService);
 
