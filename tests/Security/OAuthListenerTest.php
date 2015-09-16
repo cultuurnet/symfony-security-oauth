@@ -86,4 +86,49 @@ class OAuthListenerTest extends \PHPUnit_Framework_TestCase
 
         $this->oauthListener->handle($responseEvent);
     }
+
+    public function testHandleWithRequestParametersNull()
+    {
+        $kernel = new KernelMock();
+        $request = new Request();
+
+        $request->attributes->set('oauth_request_parameters', false);
+        $request->attributes->set('oauth_request_method', 'GET');
+        $request->attributes->set('oauth_request_url', 'http://test.com');
+
+        $responseEvent = new GetResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
+
+        $return = $this->oauthListener->handle($responseEvent);
+
+        $this->assertEquals(null, $return);
+    }
+
+    public function testHandleWithAskForResponse()
+    {
+        $kernel = new KernelMock();
+        $request = new Request();
+        $requestParameters = array(
+            'ask_response' => 'give_response',
+            'oauth_consumer_key' => 'badConsumer',
+            'oauth_token' => 'badToken',
+            'oauth_signature_method' => 'HMAC-SHA1',
+            'oauth_timestamp' => '1191242096',
+            'oauth_nonce' => 'kllo9940pd9333jh',
+            'oauth_version' => '1.0',
+            'file' => 'vacation.jpg',
+            'size' => 'original'
+        );
+        $request->attributes->set('oauth_request_parameters', $requestParameters);
+        $request->attributes->set('oauth_request_method', 'GET');
+        $request->attributes->set('oauth_request_url', 'http://test.com');
+
+        $responseEvent = new GetResponseEvent($kernel, $request, HttpKernelInterface::MASTER_REQUEST);
+
+        $this->oauthListener->handle($responseEvent);
+
+        $responseContent = $responseEvent->getResponse()->getContent();
+        $expectedResponseContent = 'mockedResponseWithAskResponseParameter';
+
+        $this->assertEquals($expectedResponseContent, $responseContent);
+    }
 }

@@ -10,6 +10,7 @@ namespace CultuurNet\SymfonySecurityOAuth\Security;
 
 use CultuurNet\SymfonySecurityOAuth\Model\Consumer;
 use CultuurNet\SymfonySecurityOAuth\Service\UserMock;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -29,6 +30,13 @@ class OAuthAuthenticationProviderMock implements AuthenticationProviderInterface
     public function authenticate(TokenInterface $token)
     {
         $params = $token->getRequestParameters();
+
+        if (!empty($params['ask_response']) && $params['ask_response'] == 'give_response') {
+            $response = new Response();
+            $response->setContent('mockedResponseWithAskResponseParameter');
+
+            return $response;
+        }
 
         if ($params['oauth_token'] == 'nnch734d00sl2jdk') {
             $user = new UserMock('123456789', 'testUser', 'email@email.email');

@@ -114,4 +114,31 @@ class OAuthRequestListenerTest extends \PHPUnit_Framework_TestCase
             $request->attributes->get('oauth_request_url')
         );
     }
+
+    /**
+     * When passing the wrong request type, headers are not parsed, and parameters not added to request.
+     */
+    public function testOnEarlyKernelAccessWithWrongRequestType()
+    {
+        $kernel = new KernelMock();
+        $this->request->headers->set('Authorization', 'OAuth oauth_token=testtoken,oauth_consumer_key=testconsumerkey');
+        $responseEvent = new GetResponseEvent($kernel, $this->request, 1000);
+
+        $this->listener->onEarlyKernelRequest($responseEvent);
+        $request = $responseEvent->getRequest();
+
+        $this->assertEquals($this->request, $request);
+    }
+
+    public function testOnEarlyKernelAccessWithoutTokenAndConsumer()
+    {
+        $kernel = new KernelMock();
+        $this->request->headers->set('Authorization', 'OAuth oauth_nonce=nonceke');
+        $responseEvent = new GetResponseEvent($kernel, $this->request, HttpKernelInterface::MASTER_REQUEST);
+
+        $this->listener->onEarlyKernelRequest($responseEvent);
+        $request = $responseEvent->getRequest();
+
+        $this->assertEquals($this->request, $request);
+    }
 }

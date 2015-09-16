@@ -48,4 +48,14 @@ class OAuthServerServiceMock extends OAuthServerService
             $token
         );
     }
+
+    public function checkConsumer($consumer)
+    {
+        return parent::checkConsumer($consumer);
+    }
+
+    public function getSignatureService($signatureServiceName)
+    {
+        return parent::getSignatureService($signatureServiceName);
+    }
 }

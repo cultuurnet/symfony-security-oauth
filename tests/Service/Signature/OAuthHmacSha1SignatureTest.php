@@ -53,4 +53,17 @@ class OAuthHmacSha1SignatureTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($hmacHashExpected, $hmacHash, 'HmacSha1 hashes are equal');
 
     }
+
+    public function testHashHmacSha1WithLongKey()
+    {
+        $baseString     = 'bs';
+        $key            = 'LongKeyLongKeyLongKeyLongKeyLongKeyLongKeyLongKeyLongKeyLongKeyLongKey';
+        $signatureService = new OAuthHmacSha1SignatureMock();
+        $hmacHash = $signatureService->hashHmacSha1($baseString, $key);
+
+        $hmacHashExpected = hash_hmac('sha1', $baseString, $key, true);
+
+        $this->assertEquals($hmacHashExpected, $hmacHash, 'HmacSha1 hashes are equal');
+
+    }
 }

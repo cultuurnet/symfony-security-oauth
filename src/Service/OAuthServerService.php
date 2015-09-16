@@ -74,7 +74,7 @@ class OAuthServerService extends OAuthAbstractServerService
 
         foreach ($requiredParameters as $requiredParameter) {
             if (false === array_key_exists($requiredParameter, $requestParameters)) {
-                throw new HttpException(400, $requiredParameter . ' ' . self::ERROR_PARAMETER_ABSENT);
+                throw new HttpException(400, self::ERROR_PARAMETER_ABSENT);
             }
         }
 
@@ -119,11 +119,6 @@ class OAuthServerService extends OAuthAbstractServerService
 
         if (true !== $this->approveSignature($consumer, $requestParameters, $requestMethod, $requestUrl, $token)) {
             throw new HttpException(401, self::ERROR_SIGNATURE_INVALID);
-        }
-
-        if ($token->hasExpired()) {
-            $this->tokenProvider->deleteAccessToken($token);
-            throw new HttpException(401, self::ERROR_TOKEN_EXPIRED);
         }
 
         return true;
