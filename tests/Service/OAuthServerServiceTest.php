@@ -247,9 +247,7 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $localTimeZone = new DateTimeZone('Europe/Brussels');
         $clock = new SystemClock($localTimeZone);
         $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
-        $consumerSecret = 'kd94hf93k423kf44';
-        $tokenSecret = 'pfkkdhi9sl3r4s00';
-        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $signature = 'KA+hKWjD8ofq67rnNcBJ1gDBToI=';
         $requestParameters['oauth_signature'] = $signature;
         $this->oauthServerService->addSignatureService($this->signatureService);
 
@@ -269,9 +267,8 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $localTimeZone = new DateTimeZone('Europe/Brussels');
         $clock = new SystemClock($localTimeZone);
         $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
-        $consumerSecret = 'kd94hf93k423kf44';
-        $tokenSecret = 'pfkkdhi9sl3r4s00';
-        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+
+        $signature = 'JymXgJ+AH5jycjJ60SB7ZsKHeyc=';
         $requestParameters['oauth_signature'] = $signature;
         $this->oauthServerService->addSignatureService($this->signatureService);
 
@@ -362,29 +359,5 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
             'signature_method_rejected'
         );
         $this->oauthServerService->getSignatureService('FakeSignatureService');
-    }
-
-    /**
-     * A helper function to calculate a signature. Necessary because we need recent timestamps.
-     *
-     * @param array $requestParameters
-     * @param string $consumerSecret
-     * @param string $tokenSecret
-     * @return string
-     */
-    public function calculateSignature($requestParameters, $consumerSecret, $tokenSecret)
-    {
-        $normalizedParameters = $this->oauthServerService->normalizeRequestParameters($requestParameters);
-
-        $signatureBaseString = $this->oauthServerService->getSignatureBaseString(
-            $this->signatureService,
-            $this->requestMethod,
-            $this->requestUrl,
-            $normalizedParameters
-        );
-
-        $oauthSignature = $this->signatureService->sign($signatureBaseString, $consumerSecret, $tokenSecret);
-
-        return $oauthSignature;
     }
 }
