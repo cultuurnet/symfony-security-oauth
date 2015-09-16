@@ -161,7 +161,7 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      * @param ConsumerProviderInterface $consumerProvider The consumer provider.
      * @param TokenProviderInterface $tokenProvider The token provider.
      * @param NonceProviderInterface $nonceProvider The nonce provider.
-     * @param Clock $clock The clock provider
+     * @param Clock $clock The clock.
      */
     public function __construct(
         ConsumerProviderInterface $consumerProvider,
