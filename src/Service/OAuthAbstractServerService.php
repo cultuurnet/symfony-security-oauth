@@ -209,14 +209,6 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     }
 
     /**
-     * @return Clock
-     */
-    private function getClock()
-    {
-        return $this->clock;
-    }
-
-    /**
      * {@inheritdoc}
      * @return \CultuurNet\SymfonySecurityOAuth\Model\Provider\ConsumerProviderInterface
      */
@@ -288,8 +280,9 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      */
     protected function checkTimestamp($oauthTimestamp)
     {
-        $maxTimestamp = $this->getClock()->getDateTime()->getTimestamp() + $this->getRequestTokenInterval();
-        $minTimestamp = $this->getClock()->getDateTime()->getTimestamp() - $this->getRequestTokenInterval();
+        $currentTime = $this->clock->getDateTime()->getTimestamp();
+        $maxTimestamp = $currentTime + $this->getRequestTokenInterval();
+        $minTimestamp = $currentTime - $this->getRequestTokenInterval();
 
         return ($oauthTimestamp > $minTimestamp && $oauthTimestamp < $maxTimestamp);
     }
