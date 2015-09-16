@@ -212,7 +212,7 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      * {@inheritdoc}
      * @return \CultuurNet\Clock\Clock
      */
-    public function getClock()
+    private function getClock()
     {
         return $this->clock;
     }

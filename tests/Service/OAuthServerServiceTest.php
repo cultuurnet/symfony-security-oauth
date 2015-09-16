@@ -177,7 +177,7 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     public function testValidateRequest()
     {
         $requestParameters = $this->requestParameters;
-        $requestParameters['oauth_timestamp'] = $this->oauthServerService->getClock()->getDateTime()->getTimestamp();
+        $requestParameters['oauth_timestamp'] = 1433160000;// $this->oauthServerService->getClock()->getDateTime()->getTimestamp();
         $signature = 'dwEfwtMrnGvGbxqXtv0q4BRRmLg=';
 
         $requestParameters['oauth_signature'] = $signature;
@@ -195,14 +195,13 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     public function testValidateRequestWithBadData()
     {
         $signature = 'tR3+Ty81lMeYAr/Fid0kMTYa/WM=';
-        $clock = $this->oauthServerService->getClock();
 
         $requestParameters = array(
             'oauth_consumer_key' => 'testConsumer',
             'oauth_token' => 'testToken',
             'oauth_signature' => $signature,
             'oauth_signature_method' => 'HMAC-SHA1',
-            'oauth_timestamp' => $clock->getDateTime()->getTimestamp(),
+            'oauth_timestamp' => 1433160000,
             'oauth_nonce' => 'testNonce',
             'oauth_version' => '1.0',
             'file' => 'vacation.jpg',
@@ -289,14 +288,12 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $requestParameters = $this->requestParameters;
         $requestParameters['oauth_version'] = '35A';
-        $clock = $this->oauthServerService->getClock();
 
-        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
+        $requestParameters['oauth_timestamp'] = 1433160000;
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
         $signature = 'gnlHX1gSvz30mAMaV6xWc5Stz78=';
         $requestParameters['oauth_signature'] = $signature;
-        //var_dump($signature);
         $this->oauthServerService->addSignatureService($this->signatureService);
 
         $this->setExpectedException('Symfony\Component\HttpKernel\Exception\HttpException', 'version_rejected');
@@ -312,8 +309,7 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $requestParameters = $this->requestParameters;
         $requestParameters['oauth_nonce'] = 'returnFalse';
-        $clock = $this->oauthServerService->getClock();
-        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
+        $requestParameters['oauth_timestamp'] = 1433160000;
 
         $signature = '2vT3xOR/Xij2DN1Ns3R8UNQ/N+g=';
 
@@ -333,9 +329,9 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $requestParameters = $this->requestParameters;
         $requestParameters['oauth_token'] = 'returnBadToken';
-        $clock = $this->oauthServerService->getClock();
 
-        $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
+
+        $requestParameters['oauth_timestamp'] = 1433160000;
         $signature = 'btZnOkU+lCRSAAK5q9riQc4VbZE=';
         $requestParameters['oauth_signature'] = $signature;
         $this->oauthServerService->addSignatureService($this->signatureService);
