@@ -198,8 +198,7 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
         $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
-        $localTimeZone = new \DateTimeZone('Europe/Brussels');
-        $clock = new SystemClock($localTimeZone);
+        $clock = $this->oauthServerService->getClock();
 
         $requestParameters = array(
             'oauth_consumer_key' => 'testConsumer',
