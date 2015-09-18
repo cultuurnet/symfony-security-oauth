@@ -99,18 +99,12 @@ class OAuthServerService extends OAuthAbstractServerService
         $consumer = $this->getConsumerByKey($requestParameters['oauth_consumer_key']);
         $token    = $this->tokenProvider->getAccessTokenByToken($requestParameters['oauth_token']);
 
-        if (false === $this->nonceProvider->checkNonceAndTimestampUnicity(
+        if (false === $this->nonceProvider->registerNonceAndTimestamp(
             $requestParameters['oauth_nonce'],
             $requestParameters['oauth_timestamp'],
             $consumer
         )) {
             throw new HttpException(400, self::ERROR_NONCE_USED);
-        } else {
-            $this->nonceProvider->registerNonceAndTimestamp(
-                $requestParameters['oauth_nonce'],
-                $requestParameters['oauth_timestamp'],
-                $consumer
-            );
         }
 
         if (! $token instanceof TokenInterface) {
