@@ -18,13 +18,5 @@ interface NonceProviderInterface
      * @param  \CultuurNet\SymfonySecurityOAuth\Model\ConsumerInterface $consumer
      * @return boolean
      */
-    public function checkNonceAndTimestampUnicity($nonce, $timestamp, ConsumerInterface $consumer);
-
-    /**
-     * @param $nonce
-     * @param $timestamp
-     * @param  \CultuurNet\SymfonySecurityOAuth\Model\ConsumerInterface $consumer
-     * @return boolean
-     */
     public function registerNonceAndTimestamp($nonce, $timestamp, ConsumerInterface $consumer);
 }
