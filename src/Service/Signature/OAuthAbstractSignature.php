@@ -13,6 +13,7 @@ abstract class OAuthAbstractSignature implements OAuthSignatureInterface
     /**
      * Returns an encoded string according to the RFC3986.
      *
+     * @param string $string
      * @return string
      */
     public function urlencode($string)

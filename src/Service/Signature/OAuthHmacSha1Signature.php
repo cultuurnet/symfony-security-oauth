@@ -24,6 +24,9 @@ class OAuthHmacSha1Signature extends OAuthAbstractSignature
         return base64_encode($signature);
     }
     /**
+     * @param string $baseString
+     * @param string $key
+     * @return string
      * @see http://code.google.com/p/oauth-php/source/browse/trunk/library/signature_method/OAuthSignatureMethod_HMAC_SHA1.php
      */
     protected function hashHmacSha1($baseString, $key)
