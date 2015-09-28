@@ -39,6 +39,7 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
             return null;
         }
 
+        /** @var OAuthToken $token */
         if ($this->serverService->validateRequest(
             $token->getRequestParameters(),
             $token->getRequestMethod(),
