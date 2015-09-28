@@ -10,6 +10,9 @@ namespace CultuurNet\SymfonySecurityOAuth\Service\Signature;
 
 class OAuthHmacSha1SignatureTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var OAuthHmacSha1Signature
+     */
     private $method;
 
     public function setUp()
