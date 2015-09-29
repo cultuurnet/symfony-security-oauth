@@ -8,7 +8,7 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Security;
 
-use CultuurNet\Clock\SystemClock;
+use CultuurNet\Clock\FrozenClock;
 use CultuurNet\SymfonySecurityOAuth\Service\ConsumerProviderMock;
 use CultuurNet\SymfonySecurityOAuth\Service\NonceProviderMock;
 use CultuurNet\SymfonySecurityOAuth\Service\OAuthServerServiceMock;
@@ -49,8 +49,9 @@ class OAuthAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $consumerProvider = new ConsumerProviderMock();
         $tokenProvider = new TokenProviderMock();
         $nonceProvider = new NonceProviderMock();
-        $localTimeZone = new DateTimeZone('Europe/Brussels');
-        $clock = new SystemClock($localTimeZone);
+        $fixedTimestamp = new \DateTime();
+        $fixedTimestamp->setTimestamp(1433160000);
+        $clock = new FrozenClock($fixedTimestamp);
         $this->oauthServerService = new OAuthServerServiceMock($consumerProvider, $tokenProvider, $nonceProvider, $clock);
         $this->signatureService = new OAuthHmacSha1Signature();
         $this->oauthServerService->addSignatureService($this->signatureService);
@@ -65,7 +66,7 @@ class OAuthAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
             'oauth_consumer_key' => 'dpf43f3p2l4k3l03',
             'oauth_token' => 'nnch734d00sl2jdk',
             'oauth_signature_method' => 'HMAC-SHA1',
-            'oauth_timestamp' => time(),
+            'oauth_timestamp' => 1433160000,
             'oauth_nonce' => 'kllo9940pd9333jh',
             'oauth_version' => '1.0',
             'file' => 'vacation.jpg',
@@ -74,7 +75,7 @@ class OAuthAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
 
-        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $signature = 'dwEfwtMrnGvGbxqXtv0q4BRRmLg=';
         $requestParameters['oauth_signature'] = $signature;
 
         $token = $this->token;
@@ -98,7 +99,7 @@ class OAuthAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
             'oauth_consumer_key' => 'dpf43f3p2l4k3l03',
             'oauth_token' => 'nnch734d00sl2jdk',
             'oauth_signature_method' => 'HMAC-SHA1',
-            'oauth_timestamp' => time(),
+            'oauth_timestamp' => 1433160000,
             'oauth_nonce' => 'kllo9940pd9333jh',
             'oauth_version' => '1.0',
             'file' => 'vacation.jpg',
@@ -107,7 +108,7 @@ class OAuthAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
 
-        $signature = $this->calculateSignature($requestParameters, $consumerSecret, $tokenSecret);
+        $signature = 'dwEfwtMrnGvGbxqXtv0q4BRRmLg=';
         $requestParameters['oauth_signature'] = $signature;
 
         $token = new TokenMock();
@@ -115,29 +116,5 @@ class OAuthAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $returnedToken = $this->oauthAuthenticationProvider->authenticate($token);
 
         $this->assertEquals(null, $returnedToken, 'Returned token is null');
-    }
-
-    /**
-     * A helper function to calculate a signature. Necessary because we need recent timestamps.
-     *
-     * @param array $requestParameters
-     * @param string $consumerSecret
-     * @param string $tokenSecret
-     * @return string
-     */
-    public function calculateSignature($requestParameters, $consumerSecret, $tokenSecret)
-    {
-        $normalizedParameters = $this->oauthServerService->normalizeRequestParameters($requestParameters);
-
-        $signatureBaseString = $this->oauthServerService->getSignatureBaseString(
-            $this->signatureService,
-            $this->requestMethod,
-            $this->requestUrl,
-            $normalizedParameters
-        );
-
-        $oauthSignature = $this->signatureService->sign($signatureBaseString, $consumerSecret, $tokenSecret);
-
-        return $oauthSignature;
     }
 }
