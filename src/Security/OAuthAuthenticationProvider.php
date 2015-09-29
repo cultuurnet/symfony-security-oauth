@@ -53,8 +53,6 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
                 return $token;
             }
         }
-
-        throw new AuthenticationException('OAuth authentication failed');
     }
 
     public function supports(TokenInterface $token)
