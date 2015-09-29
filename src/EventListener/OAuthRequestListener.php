@@ -46,7 +46,7 @@ class OAuthRequestListener
             $request->request->all()
         );
     }
-    
+
     /**
      * Parse the Authorization header if available.
      *
