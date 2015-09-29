@@ -40,18 +40,18 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
         }
 
         /** @var OAuthToken $token */
-        if ($this->serverService->validateRequest(
+        $this->serverService->validateRequest(
             $token->getRequestParameters(),
             $token->getRequestMethod(),
             $token->getRequestUrl()
-        )) {
-            $params      = $token->getRequestParameters();
-            $accessToken = $this->tokenProvider->getAccessTokenByToken($params['oauth_token']);
-            $user        = $accessToken->getUser();
-            if (null !== $user) {
-                $token->setUser($user);
-                return $token;
-            }
+        );
+
+        $params      = $token->getRequestParameters();
+        $accessToken = $this->tokenProvider->getAccessTokenByToken($params['oauth_token']);
+        $user        = $accessToken->getUser();
+        if (null !== $user) {
+            $token->setUser($user);
+            return $token;
         }
     }
 
