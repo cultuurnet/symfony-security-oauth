@@ -62,10 +62,5 @@ class OAuthListener implements ListenerInterface
         } catch (AuthenticationException $e) {
             throw $e;
         }
-
-        // By default deny authorization
-        $response = new Response();
-        $response->setStatusCode(Response::HTTP_FORBIDDEN);
-        $event->setResponse($response);
     }
 }
