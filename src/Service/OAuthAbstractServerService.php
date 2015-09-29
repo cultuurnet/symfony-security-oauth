@@ -233,16 +233,6 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     }
 
     /**
-     * Returns the request token lifetime.
-     *
-     * @return int
-     */
-    public function getRequestTokenLifetime()
-    {
-        return self::DEFAULT_REQUEST_TOKEN_LIFETIME;
-    }
-
-    /**
      * Returns the access token lifetime.
      *
      * @return int
@@ -250,16 +240,6 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     public function getAccessTokenLifetime()
     {
         return self::DEFAULT_ACCESS_TOKEN_LIFETIME;
-    }
-
-    /**
-     * Returns the request token interval time.
-     *
-     * @return int
-     */
-    public function getRequestTokenInterval()
-    {
-        return self::DEFAULT_REQUEST_TOKEN_INTERVAL;
     }
 
     /**
