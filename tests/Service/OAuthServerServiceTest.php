@@ -374,6 +374,18 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $this->oauthServerService->getSignatureService('FakeSignatureService');
     }
 
+    public function testServerServiceProperties()
+    {
+        $consumerProvider = $this->oauthServerService->getConsumerProvider();
+        $accessTokenLifetime = $this->oauthServerService->getAccessTokenLifetime();
+
+        $expectedConsumerProvider = new ConsumerProviderMock();
+        $expectedAccessTokenLifetime = OAuthServerService::DEFAULT_ACCESS_TOKEN_LIFETIME;
+
+        $this->assertEquals($expectedConsumerProvider, $consumerProvider);
+        $this->assertEquals($expectedAccessTokenLifetime, $accessTokenLifetime);
+    }
+
     /**
      * A helper function to calculate a signature. Necessary because we need recent timestamps.
      *
