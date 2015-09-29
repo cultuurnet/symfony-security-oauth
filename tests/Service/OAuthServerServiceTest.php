@@ -14,7 +14,6 @@ use CultuurNet\SymfonySecurityOAuth\Model\Consumer;
 use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use CultuurNet\SymfonySecurityOAuth\Service\Signature\OAuthHmacSha1Signature;
 use DateTimeZone;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -226,7 +225,7 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     {
         $requestParameters = $this->requestParameters;
         $now = new \DateTime('now');
-        $extendedInterval = $this->oauthServerService->getRequestTokenInterval() * 2;
+        $extendedInterval = $this->oauthServerService->getAccessTokenInterval() * 2;
         $interval= new \DateInterval('PT' . $extendedInterval . 'S');
 
         $futureTimestamp = $now->add($interval);
