@@ -350,9 +350,9 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     ) {
         return sprintf(
             '%s&%s&%s',
-            $signatureService->urlencode($requestMethod),
-            $signatureService->urlencode($requestUrl),
-            $signatureService->urlencode($normalizedParameters)
+            $signatureService->urlEncode($requestMethod),
+            $signatureService->urlEncode($requestUrl),
+            $signatureService->urlEncode($normalizedParameters)
         );
     }
 

@@ -15,7 +15,7 @@ class OAuthHmacSha1Signature extends OAuthAbstractSignature
      */
     public function sign($baseString, $consumerSecret, $tokenSecret = '')
     {
-        $key = $this->urlencode($consumerSecret) . '&' . $this->urlencode($tokenSecret);
+        $key = $this->urlEncode($consumerSecret) . '&' . $this->urlEncode($tokenSecret);
         if (function_exists('hash_hmac')) {
             $signature = (hash_hmac('sha1', $baseString, $key, true));
         } else {

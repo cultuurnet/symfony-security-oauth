@@ -26,4 +26,11 @@ interface OAuthSignatureInterface
      * @return string The signature name.
      */
     public function getName();
+    /**
+     * Returns an encoded string according to the RFC3986.
+     *
+     * @param string $string The url to encode.
+     * @return string The encoded url.
+     */
+    public function urlEncode($string);
 }
