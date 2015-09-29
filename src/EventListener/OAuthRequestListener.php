@@ -31,6 +31,7 @@ class OAuthRequestListener
         $request->attributes->set('oauth_request_method', $request->getMethod());
         $request->attributes->set('oauth_request_url', $this->buildRequestUrl($request));
     }
+
     /**
      * Merge all acceptable parameters.
      *
@@ -45,6 +46,7 @@ class OAuthRequestListener
             $request->request->all()
         );
     }
+    
     /**
      * Parse the Authorization header if available.
      *
@@ -53,22 +55,8 @@ class OAuthRequestListener
      */
     protected function parseAuthorizationHeader(Request $request)
     {
-        $authorization = null;
-        if (!$request->headers->has('authorization')) {
-            // The Authorization header may not be passed to PHP by Apache;
-            // Trying to obtain it through apache_request_headers()
-            if (function_exists('apache_request_headers')) {
-                $headers = apache_request_headers();
-                // Server-side fix for bug in old Android versions (a nice side-effect of this fix means we don't care
-                // about capitalization for Authorization).
-                $headers = array_combine(array_map('ucwords', array_keys($headers)), array_values($headers));
-                if (isset($headers['Authorization'])) {
-                    $authorization = $headers['Authorization'];
-                }
-            }
-        } else {
-            $authorization = $request->headers->get('authorization');
-        }
+        $authorization = $request->headers->get('authorization');
+
         $params = array();
         if (!$authorization) {
             return $params;
@@ -86,6 +74,7 @@ class OAuthRequestListener
         }
         return $params;
     }
+
     /**
      * Build a valid Request URL based on the Request.
      * @see http://oauth.net/core/1.0/#sig_url
