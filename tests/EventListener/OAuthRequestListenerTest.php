@@ -52,6 +52,7 @@ class OAuthRequestListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($headers), 'Result is an array');
         $this->assertEquals(0, count($headers), 'Result should not contain any element');
     }
+
     public function testParseAuthorizationHeaderWithNullValue()
     {
         $headers = $this->listener->parseAuthorizationHeader($this->request);
@@ -59,6 +60,7 @@ class OAuthRequestListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($headers), 'Result is an array');
         $this->assertEquals(0, count($headers), 'Result should not contain any element');
     }
+
     public function testParseAuthorizationHeaderWithEmptyValue()
     {
         $headers = $this->listener->parseAuthorizationHeader($this->request);
