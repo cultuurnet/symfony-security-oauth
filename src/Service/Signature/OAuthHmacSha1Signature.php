@@ -20,7 +20,7 @@ class OAuthHmacSha1Signature extends OAuthAbstractSignature
 
         return base64_encode($signature);
     }
-    
+
     /**
      * {@inheritdoc}
      */
