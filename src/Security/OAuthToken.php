@@ -8,32 +8,11 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Security;
 
-use CultuurNet\UitidCredentials\Entities\Consumer;
-use CultuurNet\UitidCredentials\Entities\User;
+use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 
 class OAuthToken extends AbstractToken
 {
-    /**
-     * @var Consumer
-     */
-    public $consumer;
-
-    /**
-     * @var string
-     */
-    public $token;
-
-    /**
-     * @var string
-     */
-    public $tokenSecret;
-
-    /**
-     * @var User
-     */
-    public $user;
-
     /**
      * @var array
      */
@@ -48,6 +27,11 @@ class OAuthToken extends AbstractToken
      * @var string
      */
     protected $requestUrl;
+
+    /**
+     * @var Token|null
+     */
+    protected $accessToken;
 
     /**
      * @param array $parameters An array of request parameters.
@@ -104,5 +88,27 @@ class OAuthToken extends AbstractToken
     {
         // @TODO Implement this necessary method.
         return '';
+    }
+
+    /**
+     * @return Token|null
+     */
+    public function getAccessToken()
+    {
+        return $this->accessToken;
+    }
+
+    /**
+     * @param Token $accessToken
+     * @return OAuthToken
+     */
+    public function authenticated(Token $accessToken)
+    {
+        $token = clone $this;
+        $token->accessToken = $accessToken;
+        $token->setUser($accessToken->getUser());
+        $token->setAuthenticated(true);
+
+        return $token;
     }
 }

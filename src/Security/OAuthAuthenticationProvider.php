@@ -8,10 +8,10 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Security;
 
+use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use CultuurNet\SymfonySecurityOAuth\Service\OAuthServerServiceInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class OAuthAuthenticationProvider implements AuthenticationProviderInterface
@@ -47,11 +47,11 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
         );
 
         $params      = $token->getRequestParameters();
+        /** @var Token $accessToken */
         $accessToken = $this->tokenProvider->getAccessTokenByToken($params['oauth_token']);
         $user        = $accessToken->getUser();
         if (null !== $user) {
-            $token->setUser($user);
-            return $token;
+            return $token->authenticated($accessToken);
         }
     }
 
