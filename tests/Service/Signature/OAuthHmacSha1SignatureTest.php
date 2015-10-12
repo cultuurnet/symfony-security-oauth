@@ -10,6 +10,9 @@ namespace CultuurNet\SymfonySecurityOAuth\Service\Signature;
 
 class OAuthHmacSha1SignatureTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var OAuthHmacSha1Signature
+     */
     private $method;
 
     public function setUp()
@@ -39,31 +42,5 @@ class OAuthHmacSha1SignatureTest extends \PHPUnit_Framework_TestCase
             $this->method->sign($baseString, $consumerSecret, $tokenSecret),
             'token secret is not null'
         );
-    }
-
-    public function testHashHmacSha1()
-    {
-        $baseString     = 'bs';
-        $key            = 'key';
-        $signatureService = new OAuthHmacSha1SignatureMock();
-        $hmacHash = $signatureService->hashHmacSha1($baseString, $key);
-
-        $hmacHashExpected = hash_hmac('sha1', $baseString, $key, true);
-
-        $this->assertEquals($hmacHashExpected, $hmacHash, 'HmacSha1 hashes are equal');
-
-    }
-
-    public function testHashHmacSha1WithLongKey()
-    {
-        $baseString     = 'bs';
-        $key            = 'LongKeyLongKeyLongKeyLongKeyLongKeyLongKeyLongKeyLongKeyLongKeyLongKey';
-        $signatureService = new OAuthHmacSha1SignatureMock();
-        $hmacHash = $signatureService->hashHmacSha1($baseString, $key);
-
-        $hmacHashExpected = hash_hmac('sha1', $baseString, $key, true);
-
-        $this->assertEquals($hmacHashExpected, $hmacHash, 'HmacSha1 hashes are equal');
-
     }
 }

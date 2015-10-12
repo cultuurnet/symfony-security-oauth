@@ -11,7 +11,10 @@ namespace CultuurNet\SymfonySecurityOAuth\Service\Signature;
 abstract class OAuthAbstractSignature implements OAuthSignatureInterface
 {
     /**
-     * {@inheritdoc}
+     * Returns an encoded string according to the RFC3986.
+     *
+     * @param string $string
+     * @return string
      */
     public function urlEncode($string)
     {

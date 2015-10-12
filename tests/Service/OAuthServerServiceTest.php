@@ -14,7 +14,6 @@ use CultuurNet\SymfonySecurityOAuth\Model\Consumer;
 use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use CultuurNet\SymfonySecurityOAuth\Service\Signature\OAuthHmacSha1Signature;
 use DateTimeZone;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
 {
@@ -224,6 +223,7 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $fixedTimeInThePast = new \DateTime();
         $fixedTimeInThePast->setTimestamp(1420113600);
         $clock = new FrozenClock($fixedTimeInThePast);
+
         $requestParameters['oauth_timestamp'] = $clock->getDateTime()->getTimestamp();
         $consumerSecret = 'kd94hf93k423kf44';
         $tokenSecret = 'pfkkdhi9sl3r4s00';
@@ -359,5 +359,17 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
             'signature_method_rejected'
         );
         $this->oauthServerService->getSignatureService('FakeSignatureService');
+    }
+
+    public function testServerServiceProperties()
+    {
+        $consumerProvider = $this->oauthServerService->getConsumerProvider();
+        $accessTokenLifetime = $this->oauthServerService->getAccessTokenLifetime();
+
+        $expectedConsumerProvider = new ConsumerProviderMock();
+        $expectedAccessTokenLifetime = OAuthServerService::DEFAULT_ACCESS_TOKEN_LIFETIME;
+
+        $this->assertEquals($expectedConsumerProvider, $consumerProvider);
+        $this->assertEquals($expectedAccessTokenLifetime, $accessTokenLifetime);
     }
 }

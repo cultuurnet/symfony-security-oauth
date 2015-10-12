@@ -27,12 +27,7 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      * The default interval time to use when you check the timestamp
      * of a request token.
      */
-    const DEFAULT_REQUEST_TOKEN_INTERVAL            = 600;
-
-    /**
-     * The default duration in seconds of the request token lifetime.
-     */
-    const DEFAULT_REQUEST_TOKEN_LIFETIME            = 3600;
+    const DEFAULT_ACCESS_TOKEN_INTERVAL            = 600;
 
     /**
      * The default duration in seconds of the access token lifetime.
@@ -242,16 +237,6 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     }
 
     /**
-     * Returns the request token lifetime.
-     *
-     * @return int
-     */
-    public function getRequestTokenLifetime()
-    {
-        return self::DEFAULT_REQUEST_TOKEN_LIFETIME;
-    }
-
-    /**
      * Returns the access token lifetime.
      *
      * @return int
@@ -266,9 +251,9 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      *
      * @return int
      */
-    public function getRequestTokenInterval()
+    public function getAccessTokenInterval()
     {
-        return self::DEFAULT_REQUEST_TOKEN_INTERVAL;
+        return self::DEFAULT_ACCESS_TOKEN_INTERVAL;
     }
 
     /**
@@ -281,8 +266,8 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     protected function checkTimestamp($oauthTimestamp)
     {
         $currentTime = $this->clock->getDateTime()->getTimestamp();
-        $maxTimestamp = $currentTime + $this->getRequestTokenInterval();
-        $minTimestamp = $currentTime - $this->getRequestTokenInterval();
+        $maxTimestamp = $currentTime + $this->getAccessTokenInterval();
+        $minTimestamp = $currentTime - $this->getAccessTokenInterval();
 
         return ($oauthTimestamp > $minTimestamp && $oauthTimestamp < $maxTimestamp);
     }

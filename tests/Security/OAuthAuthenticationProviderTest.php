@@ -9,6 +9,8 @@
 namespace CultuurNet\SymfonySecurityOAuth\Security;
 
 use CultuurNet\Clock\FrozenClock;
+use CultuurNet\SymfonySecurityOAuth\Model\Consumer;
+use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use CultuurNet\SymfonySecurityOAuth\Service\ConsumerProviderMock;
 use CultuurNet\SymfonySecurityOAuth\Service\NonceProviderMock;
 use CultuurNet\SymfonySecurityOAuth\Service\OAuthServerServiceMock;
@@ -88,7 +90,16 @@ class OAuthAuthenticationProviderTest extends \PHPUnit_Framework_TestCase
         $expectedToken->setRequestUrl($this->requestUrl);
         $expectedToken->setRequestParameters($requestParameters);
         $user = new UserMock('123456789', 'testUser', 'email@email.email');
-        $expectedToken->setUser($user);
+        $token = new Token();
+        $token->setToken($requestParameters['oauth_token']);
+        $token->setSecret('pfkkdhi9sl3r4s00');
+        $consumer = new Consumer();
+        $consumer->setConsumerKey($requestParameters['oauth_consumer_key']);
+        $consumer->setConsumerSecret('kd94hf93k423kf44');
+        $consumer->setName('testConsumer');
+        $token->setConsumer($consumer);
+        $token->setUser($user);
+        $expectedToken = $expectedToken->authenticated($token);
 
         $this->assertEquals($expectedToken, $returnedToken);
     }

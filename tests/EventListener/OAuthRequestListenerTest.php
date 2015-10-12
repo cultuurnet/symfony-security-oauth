@@ -52,6 +52,7 @@ class OAuthRequestListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($headers), 'Result is an array');
         $this->assertEquals(0, count($headers), 'Result should not contain any element');
     }
+
     public function testParseAuthorizationHeaderWithNullValue()
     {
         $headers = $this->listener->parseAuthorizationHeader($this->request);
@@ -59,12 +60,27 @@ class OAuthRequestListenerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(is_array($headers), 'Result is an array');
         $this->assertEquals(0, count($headers), 'Result should not contain any element');
     }
+
     public function testParseAuthorizationHeaderWithEmptyValue()
     {
         $headers = $this->listener->parseAuthorizationHeader($this->request);
         $this->request->headers->set('Authorization', '');
         $this->assertTrue(is_array($headers), 'Result is an array');
         $this->assertEquals(0, count($headers), 'Result should not contain any element');
+    }
+
+    public function testParseAuthorizationHeaderWithWrongParameterInHeader()
+    {
+        $this->request->headers->set('Authorization', 'OAuth foo=bar=wrong,baz="foobaz",name=will');
+
+        $headers = $this->listener->parseAuthorizationHeader($this->request);
+
+        $this->assertTrue(is_array($headers), 'Result is an array');
+        $this->assertEquals(2, count($headers), 'Result must contains 2 elements');
+        $this->assertArrayHasKey('baz', $headers, 'Check keys');
+        $this->assertArrayHasKey('name', $headers, 'Check keys');
+        $this->assertEquals('foobaz', $headers['baz'], 'Check value with quotes');
+        $this->assertEquals('will', $headers['name'], 'Check normal value');
     }
 
     public function testBuildRequestUrl()

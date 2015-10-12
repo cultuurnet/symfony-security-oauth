@@ -8,10 +8,10 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Security;
 
+use CultuurNet\SymfonySecurityOAuth\Model\Token;
 use CultuurNet\SymfonySecurityOAuth\Service\OAuthServerServiceInterface;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class OAuthAuthenticationProvider implements AuthenticationProviderInterface
@@ -39,21 +39,20 @@ class OAuthAuthenticationProvider implements AuthenticationProviderInterface
             return null;
         }
 
-        if ($this->serverService->validateRequest(
+        /** @var OAuthToken $token */
+        $this->serverService->validateRequest(
             $token->getRequestParameters(),
             $token->getRequestMethod(),
             $token->getRequestUrl()
-        )) {
-            $params      = $token->getRequestParameters();
-            $accessToken = $this->tokenProvider->getAccessTokenByToken($params['oauth_token']);
-            $user        = $accessToken->getUser();
-            if (null !== $user) {
-                $token->setUser($user);
-                return $token;
-            }
-        }
+        );
 
-        throw new AuthenticationException('OAuth authentication failed');
+        $params      = $token->getRequestParameters();
+        /** @var Token $accessToken */
+        $accessToken = $this->tokenProvider->getAccessTokenByToken($params['oauth_token']);
+        $user        = $accessToken->getUser();
+        if (null !== $user) {
+            return $token->authenticated($accessToken);
+        }
     }
 
     public function supports(TokenInterface $token)
