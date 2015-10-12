@@ -3,24 +3,39 @@
     "description": "Brief description of this PHP library",
     "type": "library",
     "license": "Apache-2.0",
-    "authors": [],
+    "authors": [
+      {
+        "name": "Nicolas Leroy",
+        "email": "nicolas.leroy@gmail.com"
+      },
+      {
+        "name": "Jonas Verhaeghe",
+        "email": "Jonas@cultuurnet.be"
+      },
+      {
+        "name": "Kristof Coomans",
+        "email": "kristof@2dotstwice.be"
+      }
+    ],
     "require": {
-      "cultuurnet/uitid-credentials": "~0.1"
+      "symfony/security": "~2.7.3",
+      "cultuurnet/clock": "~0.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.7",
+        "phpunit/phpunit": "~4.8",
+        "phpunit/php-token-stream": "1.4.6",
         "squizlabs/php_codesniffer": "~2.3",
         "phing/phing": "~2.11",
         "satooshi/php-coveralls": "~0.7"
     },
     "autoload": {
         "psr-4": {
-            "CultuurNet\\SymfonySecurityOauth\\": "src/"
+            "CultuurNet\\SymfonySecurityOAuth\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "CultuurNet\\SymfonySecurityOauth\\": "test/"
+            "CultuurNet\\SymfonySecurityOAuth\\": "tests/"
         }
     },
     "minimum-stability": "dev",
