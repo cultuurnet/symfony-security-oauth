@@ -8,6 +8,7 @@
 
 namespace CultuurNet\SymfonySecurityOAuth\Service;
 
+use CultuurNet\Clock\Clock;
 use CultuurNet\SymfonySecurityOAuth\Model\ConsumerInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\TokenInterface;
 use CultuurNet\SymfonySecurityOAuth\Model\Provider\ConsumerProviderInterface;
@@ -121,6 +122,11 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     protected $nonceProvider;
 
     /**
+     * @var Clock
+     */
+    protected $clock;
+
+    /**
      * An array of signature services that implement OAuthSignatureInterface.
      * @var array
      */
@@ -148,17 +154,20 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      * Constructor.
      *
      * @param ConsumerProviderInterface $consumerProvider The consumer provider.
-     * @param TokenProviderInterface    $tokenProvider    The token provider.
-     * @param NonceProviderInterface    $nonceProvider    The nonce provider.
+     * @param TokenProviderInterface $tokenProvider The token provider.
+     * @param NonceProviderInterface $nonceProvider The nonce provider.
+     * @param Clock $clock The clock.
      */
     public function __construct(
         ConsumerProviderInterface $consumerProvider,
         TokenProviderInterface $tokenProvider,
-        NonceProviderInterface $nonceProvider
+        NonceProviderInterface $nonceProvider,
+        Clock $clock
     ) {
         $this->consumerProvider  = $consumerProvider;
         $this->tokenProvider     = $tokenProvider;
         $this->nonceProvider     = $nonceProvider;
+        $this->clock             = $clock;
         $this->signatureServices = array();
         $this->requiredParamsForRequestToken = array(
             'oauth_consumer_key',
@@ -256,8 +265,9 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
      */
     protected function checkTimestamp($oauthTimestamp)
     {
-        $maxTimestamp = time() + $this->getAccessTokenInterval();
-        $minTimestamp = time() - $this->getAccessTokenInterval();
+        $currentTime = $this->clock->getDateTime()->getTimestamp();
+        $maxTimestamp = $currentTime + $this->getAccessTokenInterval();
+        $minTimestamp = $currentTime - $this->getAccessTokenInterval();
 
         return ($oauthTimestamp > $minTimestamp && $oauthTimestamp < $maxTimestamp);
     }
@@ -325,9 +335,9 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
     ) {
         return sprintf(
             '%s&%s&%s',
-            $signatureService->urlencode($requestMethod),
-            $signatureService->urlencode($requestUrl),
-            $signatureService->urlencode($normalizedParameters)
+            $signatureService->urlEncode($requestMethod),
+            $signatureService->urlEncode($requestUrl),
+            $signatureService->urlEncode($normalizedParameters)
         );
     }
 

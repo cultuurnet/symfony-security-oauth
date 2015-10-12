@@ -16,7 +16,7 @@ abstract class OAuthAbstractSignature implements OAuthSignatureInterface
      * @param string $string
      * @return string
      */
-    public function urlencode($string)
+    public function urlEncode($string)
     {
         return str_replace('%7E', '~', rawurlencode($string));
     }
