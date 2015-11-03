@@ -64,8 +64,97 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
         $fixedTimestamp->setTimestamp(1433160000);
         $clock = new FrozenClock($fixedTimestamp);
 
-        $this->oauthServerService = new OAuthServerServiceMock($consumerProvider, $tokenProvider, $nonceProvider, $clock);
+        $this->oauthServerService = new OAuthServerServiceMock(
+            $consumerProvider,
+            $tokenProvider,
+            $nonceProvider,
+            $clock
+        );
         $this->signatureService = new OAuthHmacSha1Signature();
+    }
+
+    /**
+     * Based on an example scenario by Twitter.
+     * @see https://dev.twitter.com/oauth/overview/authorizing-requests
+     */
+    public function testSignatureForRequestWithPOSTParametersTwitter()
+    {
+        $requestParameters = array(
+            'oauth_consumer_key' => "xvz1evFS4wEEPTGEFPHBog",
+            'oauth_nonce' => "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg",
+            'oauth_signature' => "tnnArxj06cWHq44gCs1OSKk/jLY=",
+            'oauth_signature_method' => "HMAC-SHA1",
+            'oauth_timestamp' => "1318622958",
+            'oauth_token' => "370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb",
+            'oauth_version' => "1.0",
+            'status' => "Hello Ladies + Gentlemen, a signed OAuth request!",
+            'include_entities' => "true"
+        );
+        $expectedNormalizedParameters = 'include_entities=true&oauth_consumer_key=xvz1evFS4wEEPTGEFPHBog';
+        $expectedNormalizedParameters .= '&oauth_nonce=kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg';
+        $expectedNormalizedParameters .= '&oauth_signature_method=HMAC-SHA1';
+        $expectedNormalizedParameters .= '&oauth_timestamp=1318622958';
+        $expectedNormalizedParameters .= '&oauth_token=370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb';
+        $expectedNormalizedParameters .= '&oauth_version=1.0&status=';
+        $expectedNormalizedParameters .= 'Hello%20Ladies%20%2B%20Gentlemen%2C%20a%20signed%20OAuth%20request%21';
+        $requestMethod = 'POST';
+        $requestUrl = 'https://api.twitter.com/1/statuses/update.json';
+        $consumerProvider = new ConsumerProviderMock();
+        $tokenProvider = new TokenProviderMock();
+        $nonceProvider = new NonceProviderMock();
+        $fixedTimestamp = new \DateTime();
+        $fixedTimestamp->setTimestamp(1446544977);
+        $clock = new FrozenClock($fixedTimestamp);
+
+        $oauthServerService = new OAuthServerServiceMock($consumerProvider, $tokenProvider, $nonceProvider, $clock);
+        $signatureService = new OAuthHmacSha1Signature();
+
+        // Make sure normalized parameters are ok.
+        $normalizedParametersCalculated = $this->oauthServerService->normalizeRequestParameters($requestParameters);
+
+        $this->assertEquals($expectedNormalizedParameters, $normalizedParametersCalculated);
+
+        // Make sure the basestring is ok.
+        $signatureBaseString = 'POST&https%3A%2F%2Fapi.twitter.com%2F1%2Fstatuses%2Fupdate.json';
+        $signatureBaseString .= '&include_entities%3Dtrue';
+        $signatureBaseString .= '%26oauth_consumer_key%3Dxvz1evFS4wEEPTGEFPHBog';
+        $signatureBaseString .= '%26oauth_nonce%3DkYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg';
+        $signatureBaseString .= '%26oauth_signature_method%3DHMAC-SHA1';
+        $signatureBaseString .= '%26oauth_timestamp%3D1318622958';
+        $signatureBaseString .= '%26oauth_token%3D370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb';
+        $signatureBaseString .= '%26oauth_version%3D1.0';
+        $signatureBaseString .= '%26status%3DHello%2520';
+        $signatureBaseString .= 'Ladies%2520%252B%2520Gentlemen%252C%2520a%2520signed%2520OAuth%2520request%2521';
+        $signatureBaseStringCalculated = $this->oauthServerService->getSignatureBaseString(
+            $signatureService,
+            $requestMethod,
+            $requestUrl,
+            $expectedNormalizedParameters
+        );
+
+        $this->assertEquals($signatureBaseString, $signatureBaseStringCalculated);
+
+        // Approve signature.
+        $consumer = new Consumer();
+        $consumer->setConsumerSecret('kAcSOqF21Fu85e7zjz7ZN2U4ZRhfV3WpwPAoE3Z7kBw');
+
+        $token = new Token();
+        $token->setSecret('LswwdoUaIvS8ltyTt5jkRh4J50vUPVVHtR2YPi5kE');
+
+        $oauthServerService->addSignatureService($signatureService);
+
+        $requestParameters['oauth_signature'] = 'tnnArxj06cWHq44gCs1OSKk/jLY=';
+
+        $signatureIsApproved = $oauthServerService->approveSignature(
+            $consumer,
+            $requestParameters,
+            $requestMethod,
+            $requestUrl,
+            $token
+        );
+
+        $this->assertTrue($signatureIsApproved, 'Approving signature');
+
     }
 
     public function testGetSignatureBaseString()
@@ -176,7 +265,7 @@ class OAuthServerServiceTest extends \PHPUnit_Framework_TestCase
     public function testValidateRequest()
     {
         $requestParameters = $this->requestParameters;
-        $requestParameters['oauth_timestamp'] = 1433160000;// $this->oauthServerService->getClock()->getDateTime()->getTimestamp();
+        $requestParameters['oauth_timestamp'] = 1433160000;
         $signature = 'dwEfwtMrnGvGbxqXtv0q4BRRmLg=';
 
         $requestParameters['oauth_signature'] = $signature;
