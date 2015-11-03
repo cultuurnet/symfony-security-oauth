@@ -297,7 +297,7 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
             return '';
         }
 
-        ksort($requestParameters);
+        uksort($requestParameters, 'strcmp');
         $normalizedParameters = array();
 
         foreach ($requestParameters as $key => $value) {
@@ -333,10 +333,13 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
         $requestUrl,
         $normalizedParameters
     ) {
+        $urlParts = parse_url($requestUrl);
+        $adaptedRequestUrl =  strtolower($urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path']);
+
         return sprintf(
             '%s&%s&%s',
             $signatureService->urlEncode($requestMethod),
-            $signatureService->urlEncode($requestUrl),
+            $signatureService->urlEncode($adaptedRequestUrl),
             $signatureService->urlEncode($normalizedParameters)
         );
     }
