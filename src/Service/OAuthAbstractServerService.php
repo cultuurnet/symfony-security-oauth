@@ -333,13 +333,10 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
         $requestUrl,
         $normalizedParameters
     ) {
-        $urlParts = parse_url($requestUrl);
-        $adaptedRequestUrl =  strtolower($urlParts['scheme'] . '://' . $urlParts['host'] . $urlParts['path']);
-
         return sprintf(
             '%s&%s&%s',
             $signatureService->urlEncode($requestMethod),
-            $signatureService->urlEncode($adaptedRequestUrl),
+            $signatureService->urlEncode($requestUrl),
             $signatureService->urlEncode($normalizedParameters)
         );
     }
