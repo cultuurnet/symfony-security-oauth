@@ -306,10 +306,10 @@ abstract class OAuthAbstractServerService implements OAuthServerServiceInterface
                     $sortedValues = $value;
                     sort($sortedValues);
                     foreach ($sortedValues as $sortedValue) {
-                        $normalizedParameters[] = $key . '=' . $sortedValue;
+                        $normalizedParameters[] = rawurlencode($key) . '=' . rawurlencode($sortedValue);
                     }
                 } else {
-                    $normalizedParameters[] = $key . '=' . $value;
+                    $normalizedParameters[] = rawurlencode($key) . '=' . rawurlencode($value);
                 }
             }
         }
